@@ -1,20 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
-  ],
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/client/**"
     }
   }
 }
