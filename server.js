@@ -14,6 +14,10 @@ const templateHtml = isProduction
 // Create http server
 export const app = express()
 
+app.use("/api", async (req, res)=>{
+  res.send({123: 123})
+})
+
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */
 let vite
