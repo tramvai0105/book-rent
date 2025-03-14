@@ -10,7 +10,7 @@ import { isLoggined } from './middleware.js';
 const storage = multer.diskStorage({
   destination: "files/",
   filename: function (req, file, callback) {
-    callback(null, Date.now() + ".png");
+    callback(null, Date.now() + ".jpg");
   }
 });
 const upload = multer({ storage: storage })

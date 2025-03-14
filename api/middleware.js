@@ -1,64 +1,35 @@
-import jwt from 'jsonwebtoken';
-import { User } from './models.js'
-
-export async function isLoggined(req, res, next) {
-    let token = req.cookies["token"];
-    try {
-        if(!token){
-            return res.status(404).json({message: "Not Authorized"})
-        }
-        let payload = jwt.verify(token, process.env.SECRET)
-        if (!payload) {
-            return res.status(404).send("No payload")
-        }
-        let user = await User.findById(payload._id)
-        req.body.id = payload._id
-        next()
-    } catch (error) {
-        return res.status(404).json({message: "Auth error"});
+export const isAuthenticatedAndVerified = (req, res, next) => {
+    if (!req.user || !req.user.verificated) {
+        return res.status(403).send('Доступ запрещен: вы не авторизованы или не верифицированы');
     }
-}
+    next();
+};
 
-export async function isAdmin(req, res, next) {
-    let token = req.cookies["token"];
-    try {
-        if(!token){
-            return res.status(404).json({message: "Not Authorized"})
-        }
-        let payload = jwt.verify(token, process.env.SECRET)
-        if (!payload) {
-            return res.status(404).send("No payload")
-        }
-        let user = await User.findById(payload._id)
-        if (user.privileges) {
-            console.log(req.body.id)
-            next()
+export const isModerator = (req, res, next) => {
+    // Проверяем, есть ли пользователь в сессии
+    if (req.isAuthenticated() && req.user) {
+        // Проверяем роль пользователя
+        if (req.user.role === 'moderator') {
+            return next(); // Если роль модератора, продолжаем
         } else {
-            return res.status(404).json({message: "No privileges"})
+            return res.status(403).json({ message: 'Доступ запрещен: требуется роль модератора.' });
         }
-    } catch (error) {
-        return res.status(404).json({message: "Error"});
+    } else {
+        return res.status(401).json({ message: 'Пользователь не аутентифицирован.' });
     }
-}
+};
 
-export async function checkUser(req, res, next) {
-    try {
-        let id = req.params.id;
-        let token = req.cookies["token"];
-        if(!token){
-            return res.status(404).json({message: "Not Authorized"})
-        }
-        let payload = jwt.verify(token, process.env.SECRET)
-        if (!payload) {
-            return res.status(404).send("No payload")
-        }
-        let user = await User.findById(payload._id)
-        if (user.privileges || id == req.body.id) {
-            next()
-        } else {
-            return res.status(404).json({message: "Not found"})
-        }
-    } catch (error) {
-        return res.status(404).json({message: "Fake user"});
+export const checkPermissions = (req, res, next) => {
+    if(!req.isAuthenticated() && req.user){
+        return res.status(401).json({ message: 'Пользователь не аутентифицирован.' });
     }
-} 
+    const userId = req.user.id; // ID текущего пользователя
+    const isAdmin = req.user.role === 'moderator'; // Проверка, является ли пользователь администратором
+
+    // Проверка, является ли пользователь администратором или владельцем книги
+    if (isAdmin || req.params.id === userId.toString()) {
+        return next(); // Доступ разрешен
+    } else {
+        return res.status(403).json({ message: 'Доступ запрещен.' });
+    }
+};
