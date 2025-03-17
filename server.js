@@ -11,6 +11,7 @@ import apiRouter from './api/routers/index.js';
 
 import MySQLStore from 'express-mysql-session';
 import mysql from 'mysql2/promise';
+import moderatorRouter from './api/routers/moderator.js';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -78,6 +79,7 @@ if (!isProduction) {
 app.use("/auth", authRouter);
 app.use("/api/b/", businessRouter);
 app.use("/api/", apiRouter);
+app.use("/m/", moderatorRouter);
 
 // Serve HTML
 app.use('*all', async (req, res) => {

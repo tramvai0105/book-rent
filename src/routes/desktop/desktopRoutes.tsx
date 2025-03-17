@@ -11,6 +11,10 @@ import Balance from "./pages/dashboard/pages/Balance"
 import HistoryPage from "./pages/dashboard/pages/HistoryPage"
 import Options from "./pages/dashboard/pages/Options"
 import NewListing from "./pages/dashboard/pages/NewListing"
+import DashboardMod from "./pages/dashboard/DashboardMod"
+import DashboardUser from "./pages/dashboard/DashboardUser"
+import ReviewsPage from "./pages/dashboard/moderator/ReviewsPage"
+import DisputesPage from "./pages/dashboard/moderator/DisputesPage"
 
 const desktopRoutes = [
     {
@@ -27,36 +31,52 @@ const desktopRoutes = [
           element: <DashboardPage/>,
           children: [
             {
+              path: "/dashboard/mod",
+              element: <DashboardMod/>,
+              children: [
+                {
+                  path: "/dashboard/mod/reviews",
+                  element: <ReviewsPage/>,
+                },
+                {
+                  path: "/dashboard/mod/disputes",
+                  element: <DisputesPage/>,
+                },
+              ],
+            },
+            {
               path: "/dashboard",
-              element: <Listings/>,
-            },
-            {
-              path: "/dashboard/listings",
-              element: <Listings/>,
-            },
-            {
-              path: "/dashboard/listings/new",
-              element: <NewListing/>,
-            },
-            {
-              path: "/dashboard/orders",
-              element: <Orders/>,
-            },
-            {
-              path: "/dashboard/balance",
-              element: <Balance/>,
-            },
-            {
-              path: "/dashboard/history",
-              element: <HistoryPage/>,
-            },
-            {
-              path: "/dashboard/options",
-              element: <Options/>,
-            },
-            {
-              path: "/dashboard/:id",
-              element: <Listings/>,
+              element: <DashboardUser/>,
+              children: [
+                {
+                  path: "/dashboard/listings",
+                  element: <Listings/>,
+                },
+                {
+                  path: "/dashboard/listings/new",
+                  element: <NewListing/>,
+                },
+                {
+                  path: "/dashboard/orders",
+                  element: <Orders/>,
+                },
+                {
+                  path: "/dashboard/balance",
+                  element: <Balance/>,
+                },
+                {
+                  path: "/dashboard/history",
+                  element: <HistoryPage/>,
+                },
+                {
+                  path: "/dashboard/options",
+                  element: <Options/>,
+                },
+                {
+                  path: "/dashboard/:id",
+                  element: <Listings/>,
+                },
+              ],
             },
           ]
         },

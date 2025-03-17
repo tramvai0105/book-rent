@@ -5,7 +5,7 @@ export default function SearchFilter() {
     h-fit bg-main flex flex-col text-xl py-4 pb-8 gap-3 px-2">
             <div className="w-full gap-3 items-center flex flex-col">
                 <h1 className="text-2xl">Фильтры</h1>
-                <input className="w-[70%] rounded-xl bg-white" />
+                <input placeholder="Город" className="w-[70%] pl-1 rounded-xl bg-white" />
             </div>
             <div className="flex flex-col gap-2 w-full items-center">
                 <h2>Цена, ₽</h2>

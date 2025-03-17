@@ -19,8 +19,7 @@ export interface Book {
     author: string;
     publicationYear?: number;
     genre: string;
-    condition: string;
-    city: string;
+    wealth: string;
     photoUrls: string[];
     description?: string;
     userId: number;
@@ -55,6 +54,9 @@ export interface Listing {
     rentPricePerMonth?: number;
     salePrice?: number;
     deposit: number,
+    phoneNumber: string,
+    address: string,
+    city: string,
     deliveryMethod: 'meetup' | 'post';
     status: 'pending' | 'approved' | 'rejected';
     createdAt: Date;

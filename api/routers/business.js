@@ -20,14 +20,15 @@ businessRouter.use(isAuthenticatedAndVerified);
 const bookSchema = {
     type: 'object',
     properties: {
-        title: { type: 'string', minLength: 1 },
-        author: { type: 'string', minLength: 1 },
+        title: { type: 'string', minLength: 4 },
+        author: { type: 'string', minLength: 4 },
         publicationYear: { type: 'number', optional: true },
-        genre: { type: 'string', minLength: 1 },
-        city: { type: 'string', minLength: 1 },
+        genre: { type: 'string', minLength: 4 },
+        address: { type: 'string', minLength: 4 },
         photoUrls: { type: 'array', items: { type: 'string' }, optional: true },
-        contactInfo: { type: 'string', optional: true },
+        phoneNumber: { type: 'string', optional: true },
         description: { type: 'string', maxLength: 500, optional: true },
+        wealth: { type: 'string', maxLength: 500, optional: true },
         interactionType: { type: 'string', enum: ['rent', 'sale', 'both'] },
         rentPricePerMonth: { type: 'number', optional: true },
         deposit: { type: 'number', optional: true },
@@ -39,37 +40,43 @@ const bookSchema = {
 // Роут для добавления книги
 businessRouter.post('/addBook', upload.array('photos'), async (req, res) => {
     try {
-        const { title, author, publicationYear, genre, city, contactInfo, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
+        const { title, author, publicationYear, genre, wealth, address, phoneNumber, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
 
         const validationResult = schemaInspector.validate(bookSchema, req.body);
         if (!validationResult.valid) {
             return res.status(400).json({ message: validationResult.format() });
         }
 
-        const photoUrls = req.files.map(file => file.path);
+        // Проверка на наличие загруженных файлов
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: 'Необходимо загрузить хотя бы одно фото.' });
+        }
 
+        const photoUrls = JSON.stringify(req.files.map(file => file.path));
         const newBook = {
             title,
             author,
             publicationYear,
             genre,
-            city,
             photoUrls,
-            contactInfo,
             description,
+            wealth,
             userId: req.user.id,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
-        await db.query('INSERT INTO books SET ?', newBook);
-
+        let [addedBook] = await db.query('INSERT INTO books SET ?', newBook);
         const listing = {
-            bookId: newBook.id,
+            bookId: addedBook.insertId,
             userId: req.user.id,
             interactionType,
             rentPricePerMonth,
             salePrice,
+            deposit,
+            phoneNumber,
+            address,
+            city: req.user.city, 
             deliveryMethod: 'meetup',
             status: 'pending',
             createdAt: new Date(),
@@ -111,9 +118,9 @@ businessRouter.post('/rentBook', async (req, res) => {
         }
 
         // Проверяем, является ли текущий пользователь владельцем объявления
-        if (listing[0].userId === req.user.id) {
-            return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
-        }
+        // if (listing[0].userId === req.user.id) {
+        //     return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
+        // }
 
         const rental = {
             listingId,
@@ -255,6 +262,16 @@ businessRouter.post('/purchaseBook', async (req, res) => {
             return res.status(400).json({ message: validationResult.format() });
         }
 
+        const [listing] = await db.query('SELECT * FROM listings WHERE id = ?', [listingId]);
+        if (listing.length === 0) {
+            return res.status(404).json({ message: 'Объявление не найдено' });
+        }
+
+        // Проверяем, является ли текущий пользователь владельцем объявления
+        // if (listing[0].userId === req.user.id) {
+        //     return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
+        // }
+
         const purchase = {
             listingId,
             buyerId: req.user.id,
@@ -265,8 +282,6 @@ businessRouter.post('/purchaseBook', async (req, res) => {
         };
 
         await db.query('INSERT INTO purchases SET ?', purchase);
-
-        // Здесь можно добавить логику для уведомления владельца о новой покупке
 
         res.status(201).json({ message: 'Запрос на покупку книги отправлен владельцу' });
     } catch (error) {

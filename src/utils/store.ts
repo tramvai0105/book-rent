@@ -12,11 +12,11 @@ class Store {
     let res = await fetch("/auth/me")
     let body = await res.json();
     if(body.message !== 'Unauthorized'){
-        this.userData = body.user;
-        this.authorized = true;
+        this.setUserData(body.user);
+        this.setAuthorized(true);
     }else{
-        this.userData = null;
-        this.authorized = false;
+      this.setUserData(null);
+      this.setAuthorized(false);
     }
   }
 

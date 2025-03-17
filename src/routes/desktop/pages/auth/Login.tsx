@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import store from '../../../../utils/store';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,7 +28,10 @@ const Login = () => {
                 setSuccess('Вход выполнен успешно!');
                 setEmail('');
                 setPassword('');
-                // Здесь вы можете перенаправить пользователя на другую страницу или выполнить другие действия
+                store.fetchUser();
+                setTimeout(()=>{
+                    navigate("/")
+                }, 1500)
             } else {
                 throw new Error('Ошибка входа');
             }

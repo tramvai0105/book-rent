@@ -1,7 +1,9 @@
 import express from 'express'
+import publicRouter from './public.js';
+import privateRouter from './private.js';
 const apiRouter = express.Router()
 
-import booksRouter from "./books.js"
-apiRouter.use("/books", booksRouter)
+apiRouter.use("/public", publicRouter);
+apiRouter.use("/private", privateRouter);
 
 export default apiRouter;

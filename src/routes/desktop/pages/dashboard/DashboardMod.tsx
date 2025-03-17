@@ -9,10 +9,10 @@ export default function DashboardUser(){
     const navigate = useNavigate()
 
     useEffect(()=>{
-        if(location.pathname == "/dashboard"){
-            navigate("/dashboard/listings");
+        if(location.pathname == "/dashboard/mod"){
+            navigate("/dashboard/mod/reviews");
         }
-    })
+    },[])
 
     async function logout() {
         await fetch('/auth/logout', {
@@ -26,11 +26,8 @@ export default function DashboardUser(){
     }
 
     let navs = [
-        {to: "./listings", text: "Мои объявления"},
-        {to: "./orders", text: "Заказы"},
-        {to: "./balance", text: "Баланс"},
-        {to: "./history", text: "История"},
-        {to: "./options", text: "Настройки"},
+        {to: "./reviews", text: "Объявления"},
+        {to: "./disputes", text: "Споры"},
     ]
 
     return(
