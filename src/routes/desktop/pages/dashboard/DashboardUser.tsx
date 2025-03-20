@@ -34,10 +34,10 @@ export default function DashboardUser(){
     ]
 
     return(
-    <div className="w-full flex flex-row">
-        <div className="w-1/5 flex flex-col items-center gap-4">
-            <img className="w-[125px] h-[125px] rounded-full" src={book}/>
-            <span className="text-2xl">asd@gmail.com</span>
+    <div className="w-full flex flex-row gap-2">
+        <div className="w-1/5 pl-2 flex flex-col items-center gap-4">
+            <img className="w-[125px] h-[125px] border-dark border-[1px] rounded-full" src={`/${store.getUserData()?.avatarUrl}`}/>
+            <span className="text-2xl">{store.getUserData()?.name}</span>
             <div className="flex flex-col py-6 border-[1px] border-gray-400 gap-2 bg-bright text-xl rounded-lg">
                 {navs.map((nav, i)=><button className="px-12 py-2 cursor-pointer hover:bg-white"
                 key={i} onClick={()=>navigate(nav.to)}>{nav.text}</button>)}

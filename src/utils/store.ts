@@ -1,7 +1,8 @@
 import { makeAutoObservable } from "mobx";
+import { User } from "./models";
 
 class Store {
-  userData: any
+  userData: User | undefined;
   authorized: boolean = false;
 
   constructor() {

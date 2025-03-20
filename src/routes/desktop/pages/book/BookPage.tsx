@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import book from "../../../../assets/book.jpg";
-import { BookData } from '../../../../utils/interfaces';
+import { BookData } from '../../../../utils/dataModels';
+import store from '../../../../utils/store';
 
 export default function BookPage() {
     const { id } = useParams();
@@ -35,7 +36,8 @@ export default function BookPage() {
             body: JSON.stringify({listingId: Number(id)}),
         })
         let body = await res.json();
-        console.log(body);
+        store.fetchUser()
+        alert(body.message);
     }
 
     async function rentBook(){
@@ -45,7 +47,8 @@ export default function BookPage() {
             body: JSON.stringify({listingId: Number(id)}),
         })
         let body = await res.json();
-        console.log(body);
+        store.fetchUser()
+        alert(body.message);
     }
 
     if (loading) {
@@ -102,24 +105,26 @@ export default function BookPage() {
                     </ul>
                 </div>
                 <div className="flex text-lg gap-10 lg:w-3/5 w-1/2 flex-row items-center mt-4">
-                    <div className='flex flex-col gap-4 ml-auto'>
+                    {bookData.interactionType == "sale" ||  bookData.interactionType == "both" 
+                    ? <div className='flex flex-col gap-4'>
                         <p className=''>
                             <span className="font-semibold">Стоимость :</span>
-                            <span>{bookData.salePrice}</span>
+                            <span>{Number(bookData.salePrice).toFixed(0)} ₽</span>
                         </p>
-                        <button onClick={purchaseBook} className="border text-xl border-lbrown rounded-full px-7 py-2 cursor-pointer hover:bg-lbrown hover:text-white ">
+                        <button onClick={purchaseBook} className="border w-fit text-xl border-lbrown rounded-full px-7 py-2 cursor-pointer hover:bg-lbrown hover:text-white ">
                             Купить
                         </button>
-                    </div>
-                    <div className='flex flex-col gap-4 mr-8'>
-                        <p className=''>
+                    </div>:<></>}
+                    {bookData.interactionType == "rent" ||  bookData.interactionType == "both" 
+                    ? <div className='flex flex-col gap-4'>
+                        <div className='flex gap-2'>
                             <span className="font-semibold">Аренда:</span>
-                            <span>{bookData.rentPrice} + залог</span>
-                        </p>
-                        <button onClick={rentBook} className="border text-xl border-lbrown rounded-full px-7 py-2 cursor-pointer hover:bg-lbrown hover:text-white ">
+                            <span>{`${(Number(bookData.rentPrice) + Number(bookData.deposit)).toFixed(0)} ₽ (с учетом залога - ${Number(bookData.deposit).toFixed(0)} ₽)`}</span>
+                        </div>
+                        <button onClick={rentBook} className="border w-fit text-xl border-lbrown rounded-full px-7 py-2 cursor-pointer hover:bg-lbrown hover:text-white ">
                             Арендовать
                         </button>
-                    </div>
+                    </div>:<></>}
                 </div>
             </div>
         </div>

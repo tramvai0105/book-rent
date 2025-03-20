@@ -143,14 +143,14 @@ authRouter.post('/verificate', async (req, res) => {
 authRouter.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
-            return res.status(500).json({ message: 'Ошибка аутентификации' });
+            return res.status(500).json({ message: err });
         }
         if (!user) {
             return res.status(401).json({ message: user });
         }
         req.logIn(user, (err) => {
             if (err) {
-                return res.status(500).json({ message: 'Ошибка при входе' });
+                return res.status(500).json({ message: err });
             }
             return res.status(200).json({ message: 'Успешный вход', user });
         });

@@ -1,24 +1,25 @@
 import { useNavigate } from "react-router-dom"
 import book from "../../../../../assets/book.jpg"
 import React, { useEffect, useState } from "react"
-import { ListingData } from "../../../../../utils/interfaces"
+import { ListingData } from "../../../../../utils/dataModels"
 
 export default function Listings() {
     const navigate = useNavigate()
     const [listings, setListings] = useState<ListingData[]>([])
 
     useEffect(()=>{
-        const fetchListings = async () => {
-            let res = await fetch("/api/private/listings");
-            let body = await res.json();
-            setListings(body);
-        }
         fetchListings()
     },[])
 
+    const fetchListings = async () => {
+        let res = await fetch("/api/private/listings");
+        let body = await res.json();
+        setListings(body);
+    }
+
     return (
         <>
-            <div className="flex flex-row mt-6 justify-between px-6">
+            <div className="flex flex-row mt-6 justify-between items-center px-6">
                 <h1 className="text-2xl font-bold">Мои объявления</h1>
                 <button onClick={()=>navigate("./new")} className="cursor-pointer px-8 py-2 rounded-xl bg-lbrown text-xl 
                 border-[1px] border-lbrown hover:text-white">Новое объявление</button>
@@ -26,14 +27,33 @@ export default function Listings() {
             <div className="w-full h-[1px] my-2 bg-dark"></div>
             <div>
                 {listings.map((l, i)=>{
-                    return(<React.Fragment key={i}><Listing listing={l} key={i}/><div className="w-full my-2 h-[1px] bg-dark"></div></React.Fragment>)
+                    return(<React.Fragment key={i}><Listing refetch={fetchListings} listing={l} key={i}/><div className="w-full my-2 h-[1px] bg-dark"></div></React.Fragment>)
                 })}
             </div>
         </>
     )
 }
 
-function Listing({listing}:{listing: ListingData}) {
+function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
+    const navigate = useNavigate()
+
+    const statuses = {
+        'pending': "На рассмотрении" ,
+        'approved': "Опубликовано" ,
+        'active':"Активный",
+        'rejected': "Отклонено"
+    }
+
+    async function removeListing(){
+        const result = confirm("Точно удалить объявление?")
+        if(!result){
+            return;
+        }
+        let res = await fetch(`/api/private/listings/remove/${listing.id}`, {method: "DELETE"})
+        let body = await res.json()
+        refetch()
+    }
+
     return (
         <div className="px-4 py-6 flex border-[1px] border-dark rounded-2xl flex-row gap-4">
             <div className="w-2/5 flex flex-col gap-2">
@@ -45,11 +65,12 @@ function Listing({listing}:{listing: ListingData}) {
                         <li>Автор {listing.author}</li>
                         <li>Год издания {listing.publicationYear}</li>
                         <li>Жанр {listing.genre}</li>
-                        <li>Сумма залога {listing.deposit}</li>
+                        <li>Сумма залога {Number(listing.deposit).toFixed(0)}</li>
                     </ul>
                 </div>
             </div>
             <div className="w-3/5 mt-6 flex flex-col">
+                    <div className="bg-lbrown w-fit rounded-lg text-white px-4 text-lg py-1">Статус: {statuses[listing.status]}</div>
                     <div className="mb-4 text-lg">
                         <p className="flex gap-3">
                             <span className="font-semibold">Номер телефона:</span>
@@ -60,6 +81,10 @@ function Listing({listing}:{listing: ListingData}) {
                             <span>{listing.address}</span>
                         </p>
                     </div>
+                    {listing.rejectionReason ?<div className="mb-4">
+                        <p className="font-semibold">Причина отклонения</p>
+                        <div className="w-full whitespace-pre-wrap resize-none p-2 rounded-lg">{listing.rejectionReason}</div>
+                    </div> : <></>}
                     <div className="mb-4">
                         <p className="font-semibold">Описание</p>
                         <div className="w-full whitespace-pre-wrap resize-none p-2 rounded-lg">{listing.description}</div>
@@ -68,9 +93,14 @@ function Listing({listing}:{listing: ListingData}) {
                         <p className="font-semibold">Состояние</p>
                         <div className="w-full whitespace-pre-wrap resize-none p-2 rounded-lg">{listing.wealth}</div>
                     </div>
+                    <div className="mb-4 flex flex-row text-lg gap-4">
+                        {listing.interactionType == "rent"?<div><span className="font-bold">Аренда:</span> {listing.rentPricePerMonth}</div>:<></>}
+                        {listing.interactionType == "sale"?<div><span className="font-bold">Цена:</span> {listing.salePrice}</div>:<></>}
+                        {listing.interactionType == "rent"?<div><span className="font-bold">Депозит:</span> {listing.deposit}</div>:<></>}
+                    </div>
                     <div className="mt-auto ml-auto mb-4 mr-14 flex flex-row gap-8">
-                        <button className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Удалить</button>
-                        <button className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Редактировать</button>
+                        {listing.status != "closed" && listing.status != "pending" ?<button onClick={()=>navigate(`./edit/${listing.id}`)} className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Редактировать</button>:<></>}
+                        <button onClick={removeListing} className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Удалить</button>
                     </div>
             </div>
         </div>

@@ -2,12 +2,16 @@ export interface User {
     id: number;
     email: string;
     password: string;
-    balance: number,
-    name: string;
+    balance: number;
+    frozenBalance: number; 
+    withdrawnBalance: number; 
+    verificated: boolean;
+    name: string; 
     city: string;
-    avatarUrl?: string;
-    contactInfo: string;
-    description?: string;
+    avatarUrl: string;
+    contactInfo: string; 
+    description: string | null;
+    recovery_code: string | null;
     role: 'user' | 'moderator';
     createdAt: Date;
     updatedAt: Date;
@@ -58,7 +62,7 @@ export interface Listing {
     address: string,
     city: string,
     deliveryMethod: 'meetup' | 'post';
-    status: 'pending' | 'approved' | 'rejected';
+    status: 'pending' | 'approved' | 'rejected' | 'closed';
     createdAt: Date;
     updatedAt: Date;
 }

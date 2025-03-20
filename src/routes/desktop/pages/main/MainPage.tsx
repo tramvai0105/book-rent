@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 import SearchBar from "./SearchBar";
 import SearchFilter from "./SearchFilter";
-import { BookCardData } from "../../../../utils/interfaces";
+import { BookCardData } from "../../../../utils/dataModels";
 
 export default function MainPage(){
 

@@ -15,6 +15,7 @@ import DashboardMod from "./pages/dashboard/DashboardMod"
 import DashboardUser from "./pages/dashboard/DashboardUser"
 import ReviewsPage from "./pages/dashboard/moderator/ReviewsPage"
 import DisputesPage from "./pages/dashboard/moderator/DisputesPage"
+import EditListing from "./pages/dashboard/pages/editListing"
 
 const desktopRoutes = [
     {
@@ -55,6 +56,10 @@ const desktopRoutes = [
                 {
                   path: "/dashboard/listings/new",
                   element: <NewListing/>,
+                },
+                {
+                  path: "/dashboard/listings/edit/:id",
+                  element: <EditListing/>,
                 },
                 {
                   path: "/dashboard/orders",

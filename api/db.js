@@ -1,4 +1,5 @@
 import mysql from 'mysql2/promise';
+import bcrypt from "bcryptjs"
 
 async function init() {
     const pool = mysql.createPool({
@@ -21,11 +22,13 @@ async function init() {
             id INT PRIMARY key AUTO_INCREMENT ,
             email VARCHAR(255) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
-            balance DECIMAL(10, 2),
+            balance DECIMAL(10, 2) DEFAULT 0,
+            frozenBalance DECIMAL(10, 2) DEFAULT 0,
+            withdrawnBalance DECIMAL(10, 2) DEFAULT 0,
             verificated BOOLEAN DEFAULT FALSE,
             name VARCHAR(100) DEFAULT '',
             city VARCHAR(100) DEFAULT '',
-            avatarUrl VARCHAR(255) DEFAULT '',
+            avatarUrl VARCHAR(255) DEFAULT 'public\\avatarDefault.jpg',
             contactInfo VARCHAR(255) DEFAULT '',
             description TEXT DEFAULT NULL,
             recovery_code VARCHAR(6) DEFAULT NULL,
@@ -34,6 +37,22 @@ async function init() {
             updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
         );
         `);
+
+        const email = 'admin@gmail.com';
+        const _password = 'admin'
+        const password = await bcrypt.hash(_password, 10);
+        const name = 'admin@gmail.com';
+        const role = 'moderator';
+        const verificated = 1;
+        const balance = 10000;
+
+        await pool.query(`
+            INSERT INTO users (email, password, name, role, verificated, balance)
+            SELECT ?, ?, ?, ?, ?, ?
+            WHERE NOT EXISTS (
+                SELECT 1 FROM users WHERE email = ?
+            )
+        `, [email, password, name, role, verificated, balance, email]);
 
         await pool.query(`CREATE TABLE IF NOT EXISTS transactions (
             id INT PRIMARY KEY AUTO_INCREMENT,
@@ -85,7 +104,7 @@ async function init() {
                 city VARCHAR(255) NOT NULL, 
                 phoneNumber VARCHAR(255) NOT NULL,
                 deliveryMethod ENUM('meetup', 'post') NOT NULL,
-                status ENUM('pending', 'approved', 'rejected') NOT NULL,
+                status ENUM('pending', 'process', 'approved', 'rejected', 'closed') NOT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
@@ -98,7 +117,8 @@ async function init() {
                 renterId INT NOT NULL,
                 startDate DATE NOT NULL,
                 endDate DATE,
-                status ENUM('pending', 'active', 'returnRequest', 'completed', 'cancelled') NOT NULL,
+                total DECIMAL(10, 2) DEFAULT 0,
+                status ENUM('pending', 'active', 'returnRequest', 'extendRequest', 'completed', 'cancelled') NOT NULL,
                 deliveryTrackingNumber VARCHAR(255),
                 returnTrackingNumber VARCHAR(255),
                 penalty DECIMAL(10, 2),

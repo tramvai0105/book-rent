@@ -79,7 +79,6 @@ if (!isProduction) {
 app.use("/auth", authRouter);
 app.use("/api/b/", businessRouter);
 app.use("/api/", apiRouter);
-app.use("/m/", moderatorRouter);
 
 // Serve HTML
 app.use('*all', async (req, res) => {

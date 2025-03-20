@@ -72,13 +72,17 @@ publicRouter.get("/listings/:id", async (req, res) => {
         const [rows] = await db.query(`
             SELECT 
                 l.id,
+                l.userId,
                 b.title,
                 b.author,
                 b.publicationYear,
                 b.genre,
+                b.description,
+                b.wealth,
                 l.interactionType,
                 l.rentPricePerMonth,
                 l.salePrice,
+                l.address,
                 l.deposit,
                 l.city,
                 l.phoneNumber,
@@ -91,7 +95,7 @@ publicRouter.get("/listings/:id", async (req, res) => {
             FROM Listings l
             JOIN Books b ON l.bookId = b.id
             JOIN users u ON l.userId = u.id
-            WHERE l.status = 'approved' AND l.id = ?
+            WHERE l.id = ?
         `, [listingId]);
 
         const bookCardData = rows.map(row => {
@@ -102,12 +106,15 @@ publicRouter.get("/listings/:id", async (req, res) => {
                 title: row.title,
                 author: row.author,
                 publicationYear: row.publicationYear,
+                interactionType: row.interactionType,
                 genre: row.genre,
                 img: JSON.parse(row.img)[0] || '',
                 city: row.city,
+                address: row.address,
                 sellerName: row.sellerName,
                 phoneNumber: row.phoneNumber,
                 description: row.description || '',
+                wealth: row.wealth || '',
                 deposit: row.deposit,
                 salePrice: salePrice || 0,
                 rentPrice: rentPricePerMonth || 0,

@@ -1,25 +1,57 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-export default function NewListing() {
+export default function EditListing() {
+    const { id } = useParams(); // Получаем ID из URL
     const [formData, setFormData] = useState({
-        title: 'Франкенштейн',
-        author: 'Мэри Шэлли',
-        publicationYear: '1900',
-        genre: 'Фантастика',
-        address: 'г. Краснодар',
-        phoneNumber: '89041231212',
-        description: 'Крутая книга',
-        wealth: 'Хорошее качество',
-        interactionType: 'rent',
-        rentPricePerMonth: '123',
-        deposit: '123',
-        salePrice: '123',
+        title: '',
+        author: '',
+        publicationYear: '',
+        genre: '',
+        address: '',
+        phoneNumber: '',
+        description: '',
+        wealth: '',
+        interactionType: '',
+        rentPrice: '',
+        deposit: '',
+        salePrice: '',
         photos: null,
     });
 
     const [previewImages, setPreviewImages] = useState([]);
-    const navigate = useNavigate()
+
+    useEffect(() => {
+        const fetchListingData = async () => {
+            try {
+                const response = await fetch(`/api/public/listings/${id}`);
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке данных');
+                }
+                const data = await response.json();
+                setFormData({
+                    title: data.title,
+                    author: data.author,
+                    publicationYear: data.publicationYear,
+                    genre: data.genre,
+                    address: data.address,
+                    phoneNumber: data.phoneNumber,
+                    description: data.description,
+                    wealth: data.wealth,
+                    interactionType: data.interactionType,
+                    rentPrice: data.rentPrice || 0,
+                    deposit: data.deposit || 0,
+                    salePrice: data.salePrice || 0,
+                    photos: null,
+                });
+            } catch (error) {
+                console.error(error);
+                alert('Произошла ошибка при загрузке данных листинга');
+            }
+        };
+
+        fetchListingData();
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -42,9 +74,11 @@ export default function NewListing() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
-
+        if(!id){
+            return;
+        }
         for (const key in formData) {
-            if (key === 'photos') {
+            if (key === 'photos' && formData.photos) {
                 for (let i = 0; i < formData.photos.length; i++) {
                     data.append('photos', formData.photos[i]);
                 }
@@ -52,14 +86,13 @@ export default function NewListing() {
                 data.append(key, formData[key]);
             }
         }
-
+        data.append("listingId", id);
         try {
-            const response = await fetch('/api/b/addBook', {
-                method: 'POST',
+            const response = await fetch('/api/b/editBook', {
+                method: 'PUT',
                 body: data,
             });
             const result = await response.json();
-            navigate(".")
             alert(result.message);
         } catch (error) {
             console.error(error);
@@ -170,8 +203,8 @@ export default function NewListing() {
                     <div className='w-1/3 flex flex-row gap-4 items-center'>
                         <h2 className='text-base font-bold text-lbrown'>Стоимость</h2>
                         <input
-                            name='rentPricePerMonth'
-                            value={formData.rentPricePerMonth}
+                            name='rentPrice'
+                            value={formData.rentPrice}
                             onChange={handleChange}
                             placeholder=''
                             className='w-[40%] pl-2 h-[35px] bg-main rounded-md'
@@ -211,7 +244,7 @@ export default function NewListing() {
                     </div>
                 </div>
             </div>
-            <button type="submit" className='mt-4 cursor-pointer bg-lbrown text-white rounded-md p-2'>Добавить книгу</button>
+            <button type="submit" className='mt-4 cursor-pointer bg-lbrown text-white rounded-md p-2'>Изменить книгу</button>
         </form>
     );
 }

@@ -1,4 +1,4 @@
-import { BookCardData } from "../../../../utils/interfaces";
+import { BookCardData } from "../../../../utils/dataModels";
 import { useNavigate } from "react-router-dom";
 
 export default function BookCard({card}:{card: BookCardData}) {
