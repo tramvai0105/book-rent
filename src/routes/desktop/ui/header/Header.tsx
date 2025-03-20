@@ -14,7 +14,11 @@ function _Header() {
         </div>
         {store.getAuthorized()
         ? <div className='text-xl flex flex-row items-center ml-auto gap-6'>
-            <h2>{store.getUserData().balance}</h2>
+            {!store.getUserData()?.verificated?<button onClick={() => navigate("/verify")} 
+            className='px-3 py-1 bg-red-300 hover:underline hover:bg-red-400 hover:text-white cursor-pointer rounded-lg text-white'>
+                Вам нужно подтвердить почту.
+            </button>:<></>}
+            <h2>Баланс: {store.getUserData().balance}</h2>
             <h2 onClick={() => navigate("/dashboard")} className='px-3 py-1 bg-white hover:underline hover:bg-lbrown hover:text-white cursor-pointer rounded-lg text-brown'>Личный кабинет</h2>
         </div>
         : <div className='text-xl flex flex-row items-center ml-auto gap-6'>

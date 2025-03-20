@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"
 import { config } from 'dotenv';
 import db from '../db.js';
 import transporter from '../mail.js';
+import schemaInspector from 'schema-inspector';
 config();
 
 authRouter.get('/google',
@@ -26,8 +27,25 @@ authRouter.post("/logout", (req, res, next) => {
     });
 });
 
+const registrationSchema = {
+    type: 'object',
+    properties: {
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string', minLength: 6 }, // Минимальная длина пароля
+        contactInfo: { type: 'string', minLength: 1 }, // Обязательно
+        city: { type: 'string', minLength: 1 }, // Обязательно
+    },
+    required: ['email', 'password', 'contactInfo', 'city'], // Все поля обязательны
+};
+
 authRouter.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, contactInfo, city } = req.body;
+
+    // Валидация данных
+    const validationResult = schemaInspector.validate(registrationSchema, req.body);
+    if (!validationResult.valid) {
+        return res.status(400).json({ message: validationResult.format() });
+    }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
@@ -47,7 +65,7 @@ authRouter.post('/register', async (req, res) => {
 
         await db.query(
             'INSERT INTO users (email, password, verificated, name, city, avatarUrl, contactInfo, description, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-            [email, hash, false, email, "", "", "", "", "user", now, now]
+            [email, hash, false, email, city, "", contactInfo, "", "user", now, now]
         );
 
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();

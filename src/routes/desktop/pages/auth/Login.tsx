@@ -42,12 +42,12 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <h2>Вход</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
+        <>
+            <h2 className='text-2xl font-bold'>Вход</h2>
+            <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
+                <div className='flex flex-row justify-between gap-2'>
                     <label htmlFor="email">Почта:</label>
-                    <input
+                    <input  className='rounded-md pl-1 bg-white'
                         type="text"
                         id="email"
                         value={email}
@@ -55,9 +55,9 @@ const Login = () => {
                         required
                     />
                 </div>
-                <div>
+                <div className='flex flex-row justify-between gap-2'>
                     <label htmlFor="password">Пароль:</label>
-                    <input
+                    <input  className='rounded-md pl-1 bg-white'
                         type="password"
                         id="password"
                         value={password}
@@ -65,11 +65,11 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button type="submit">Войти</button>
+                <button className='bg-main border-[1px] mx-auto border-dark px-6 py-2 text-xl w-fit rounded-lg hover:bg-lbrown hover:text-bright' type="submit">Войти</button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {success && <p style={{ color: 'green' }}>{success}</p>}
-        </div>
+        </>
     );
 };
 
