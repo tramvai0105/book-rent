@@ -1,6 +1,6 @@
 import { Book, Listing } from "./models";
 
-type BookFields = Pick<Book, 'title' | 'author'>;
+type BookFields = Pick<Book, 'title' | 'author' | 'publicationYear'>;
 type ListingFields = Pick<Listing, 'interactionType' | 'rentPricePerMonth' | 'salePrice' | 'city'>;
 
 export interface BookCardData extends BookFields, ListingFields {

@@ -15,12 +15,15 @@ const upload = multer({ storage: storage })
 config();
 
 publicRouter.get("/listings", async (req, res) => {
+    const { name } = req.query;
+
     try {
-        const [rows] = await db.query(`
+        let query = `
             SELECT 
                 l.id,
                 b.title,
                 b.author,
+                b.publicationYear,
                 l.interactionType,
                 l.rentPricePerMonth,
                 l.salePrice,
@@ -29,7 +32,21 @@ publicRouter.get("/listings", async (req, res) => {
             FROM Listings l
             JOIN Books b ON l.bookId = b.id
             WHERE l.status = 'approved'
-        `);
+        `;
+
+        // Если параметр name присутствует, добавляем условие WHERE
+        if (name) {
+            query += ` AND (b.title LIKE ? OR b.author LIKE ?)`;
+        }
+
+        const params = [];
+        if (name) {
+            // Добавляем параметры для LIKE-запроса
+            const searchTerm = `%${name}%`; // Используем % для поиска по подстроке
+            params.push(searchTerm, searchTerm);
+        }
+
+        const [rows] = await db.query(query, params);
 
         const bookCardData = rows.map(row => {
             const { interactionType, rentPricePerMonth, salePrice } = row;
@@ -39,6 +56,7 @@ publicRouter.get("/listings", async (req, res) => {
                 id: row.id,
                 title: row.title,
                 author: row.author,
+                publicationYear: row.publicationYear,
                 img: JSON.parse(row.img)[0] || '',
                 city: row.city,
                 interactionType: interactionType,
