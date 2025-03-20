@@ -16,7 +16,6 @@ config();
 
 publicRouter.get("/listings", async (req, res) => {
     const { name } = req.query;
-
     try {
         let query = `
             SELECT 

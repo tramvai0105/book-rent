@@ -28,7 +28,7 @@ async function init() {
             verificated BOOLEAN DEFAULT FALSE,
             name VARCHAR(100) DEFAULT '',
             city VARCHAR(100) DEFAULT '',
-            avatarUrl VARCHAR(255) DEFAULT 'public\\avatarDefault.jpg',
+            avatarUrl VARCHAR(255) DEFAULT 'avatarDefault.jpg',
             contactInfo VARCHAR(255) DEFAULT '',
             description TEXT DEFAULT NULL,
             recovery_code VARCHAR(6) DEFAULT NULL,
@@ -153,17 +153,6 @@ async function init() {
             )
         `);
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS ChatMessages (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                senderId INT NOT NULL,
-                receiverId INT NOT NULL,
-                listingId INT NOT NULL,
-                message TEXT NOT NULL,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
         await pool.query(`CREATE TABLE IF NOT EXISTS deposits (
             id INT PRIMARY KEY AUTO_INCREMENT,
             amount DECIMAL(10, 2) NOT NULL,
@@ -174,6 +163,17 @@ async function init() {
             FOREIGN KEY (renterId) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (listingId) REFERENCES Listings(id) ON DELETE CASCADE
         );`)
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS ChatMessages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                senderId INT NOT NULL,
+                receiverId INT NOT NULL,
+                listingId INT NOT NULL,
+                message TEXT NOT NULL,
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Chats (

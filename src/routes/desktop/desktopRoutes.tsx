@@ -19,6 +19,7 @@ import EditListing from "./pages/dashboard/pages/editListing"
 import Verify from "./pages/auth/Verify"
 import RecoverySend from "./pages/auth/RecoverySend"
 import RecoveryAccept from "./pages/auth/RecoveryAccept"
+import Chat from "./pages/chat/Chat"
 
 const desktopRoutes = [
     {
@@ -29,6 +30,10 @@ const desktopRoutes = [
         {
           path: "/",
           element: <MainPage/>,
+        },
+        {
+          path: "/chat",
+          element: <Chat/>
         },
         {
           path: "/dashboard",

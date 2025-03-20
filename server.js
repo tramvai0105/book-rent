@@ -11,7 +11,9 @@ import apiRouter from './api/routers/index.js';
 
 import MySQLStore from 'express-mysql-session';
 import mysql from 'mysql2/promise';
-import moderatorRouter from './api/routers/moderator.js';
+
+import http from 'http';
+import { Server } from "socket.io";
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -43,18 +45,18 @@ const connection = mysql.createPool(dbSessionOptions);
 // Настройка хранилища сессий
 const sessionStore = new (MySQLStore(session))({} , connection);
 
-app.use(
-  session({
-    secret: process.env.VITE_AUTH_SECRET,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { 
-      secure: false, 
-      maxAge: 24 * 60 * 60 * 1000 
-    }, // В production`secure: true`,
-  })
-);
+const sessionMiddleware = session({
+  secret: process.env.VITE_AUTH_SECRET,
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { 
+    secure: false, 
+    maxAge: 24 * 60 * 60 * 1000 
+  }, // В production`secure: true`,
+})
+
+app.use(sessionMiddleware);
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -114,7 +116,42 @@ app.use('*all', async (req, res) => {
   }
 })
 
-// Start http server
-app.listen(port, () => {
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173"
+  }
+});
+
+server.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })
+
+io.on('connection', (socket) => {
+  const user = socket.request.user;
+  console.log(user);
+});
+
+function onlyForHandshake(middleware) {
+  return (req, res, next) => {
+    const isHandshake = req._query.sid === undefined;
+    if (isHandshake) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
+}
+
+io.engine.use(onlyForHandshake(sessionMiddleware));
+io.engine.use(onlyForHandshake(passport.session()));
+io.engine.use(
+  onlyForHandshake((req, res, next) => {
+    if (req.user) {
+      next();
+    } else {
+      res.writeHead(401);
+      res.end();
+    }
+  }),
+);
