@@ -380,5 +380,32 @@ privateRouter.post('/changeName', async (req, res) => {
     }
 });
 
+privateRouter.post('/createChat', async (req, res) => {
+    const userId = req.user.id;
+    const { listingId } = req.body;
+
+    try {
+        let [listing] = await db.query('SELECT * FROM Listings WHERE id = ?', [listingId]);
+        
+        if (listing.length === 0) {
+            return res.status(404).json({ message: 'Листинг не найден.' });
+        }
+        listing = listing[0]
+
+        const participants = JSON.stringify([userId, listing.userId]);
+        const [existingChat] = await db.query('SELECT * FROM Chats WHERE participants = ? AND listingId = ?', [participants, listingId]);
+
+        if (existingChat.length > 0) {
+            return res.status(400).json({ message: 'Чат уже существует.' });
+        }
+        
+        const [result] = await db.query('INSERT INTO Chats (participants, listingId) VALUES (?, ?)', [participants, listingId]);
+
+        res.status(201).json({ message: 'Чат успешно создан.', chatId: result.insertId });
+    } catch (error) {
+        console.error('Ошибка при создании чата:', error);
+        res.status(500).json({ message: 'Произошла ошибка при создании чата.' });
+    }
+});
 
 export default privateRouter;

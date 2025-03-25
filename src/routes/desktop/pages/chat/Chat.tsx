@@ -7,7 +7,6 @@ export default function Chat() {
 
     useEffect(() => {
         function onConnect() {
-            console.log("socket connect")
             setIsConnected(true);
         }
 

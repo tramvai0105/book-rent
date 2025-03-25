@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import book from "../../../../assets/book.jpg";
 import { BookData } from '../../../../utils/dataModels';
 import store from '../../../../utils/store';
+import OpenChat from '../../ui/OpenChat';
 
 export default function BookPage() {
     const { id } = useParams();
@@ -65,9 +66,11 @@ export default function BookPage() {
                 <h1 className="text-2xl text-lbrown font-medium text-brown-600">
                 {bookData.author} - {bookData.title}
                 </h1>
-                <button className="border border-lbrown text-lg cursor-pointer hover:bg-lbrown hover:text-white rounded-full px-6 py-1">
-                    Написать
-                </button>
+                <OpenChat listingId={bookData.id}>
+                    <button className="border border-lbrown text-lg cursor-pointer hover:bg-lbrown hover:text-white rounded-full px-6 py-1">
+                        Написать
+                    </button>
+                </OpenChat>
             </div>
             <div className="flex">
                 <div className="lg:w-2/5 w-1/2 rounded-lg flex items-center justify-center">

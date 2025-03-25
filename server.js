@@ -129,19 +129,8 @@ server.listen(port, () => {
 
 io.on('connection', (socket) => {
   const user = socket.request.user;
-  console.log(user);
+  
 });
-
-function onlyForHandshake(middleware) {
-  return (req, res, next) => {
-    const isHandshake = req._query.sid === undefined;
-    if (isHandshake) {
-      middleware(req, res, next);
-    } else {
-      next();
-    }
-  };
-}
 
 io.engine.use(onlyForHandshake(sessionMiddleware));
 io.engine.use(onlyForHandshake(passport.session()));
@@ -155,3 +144,14 @@ io.engine.use(
     }
   }),
 );
+
+function onlyForHandshake(middleware) {
+  return (req, res, next) => {
+    const isHandshake = req._query.sid === undefined;
+    if (isHandshake) {
+      middleware(req, res, next);
+    } else {
+      next();
+    }
+  };
+}

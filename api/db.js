@@ -165,22 +165,26 @@ async function init() {
         );`)
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS ChatMessages (
+            CREATE TABLE IF NOT EXISTS Chats (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                senderId INT NOT NULL,
-                receiverId INT NOT NULL,
+                participants JSON NOT NULL,
                 listingId INT NOT NULL,
-                message TEXT NOT NULL,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Chats (
+            CREATE TABLE IF NOT EXISTS ChatMessages (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                participants JSON NOT NULL,
+                senderId INT NOT NULL,
+                receiverId INT NOT NULL,
+                chatId INT NOT NULL,
+                message TEXT NOT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                FOREIGN KEY (senderId) REFERENCES Users(id),
+                FOREIGN KEY (receiverId) REFERENCES Users(id),
+                FOREIGN KEY (chatId) REFERENCES Chats(id)
             )
         `);
 

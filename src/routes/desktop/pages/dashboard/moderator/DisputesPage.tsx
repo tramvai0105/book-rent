@@ -1,5 +1,4 @@
 import React from 'react'
-import book from "../../../../../assets/book.jpg"
 
 export default function DisputesPage() {
     return (
@@ -15,7 +14,7 @@ export default function DisputesPage() {
 function Dispute() {
     return (
         <div className="flex bg-bright rounded-xl gap-4 text-lg flex-row items-center px-4 py-2">
-            <img src={book} className="w-[160px] rounded-md" />
+            <img className="w-[160px] rounded-md" />
             <div className="w-full flex flex-row">
                 <div className="flex flex-col gap-3 w-3/8">
                     <h2 className="text-lbrown font-bold whitespace-pre-wrap">Название</h2>

@@ -107,7 +107,7 @@ export interface ChatMessage {
     id: number;
     senderId: number;
     receiverId: number;
-    listingId: number;
+    chatId: number;
     message: string;
     createdAt: Date;
 }
@@ -116,6 +116,7 @@ export interface Chat {
     id: number;
     participants: number[];
     messages: ChatMessage[];
+    listingId: number,
     createdAt: Date;
     updatedAt: Date;
 }

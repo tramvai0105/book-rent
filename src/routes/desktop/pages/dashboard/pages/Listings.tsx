@@ -40,8 +40,9 @@ function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
     const statuses = {
         'pending': "На рассмотрении" ,
         'approved': "Опубликовано" ,
-        'active':"Активный",
-        'rejected': "Отклонено"
+        'process':"Активный",
+        'rejected': "Отклонено",
+        'closed': "Завершён",
     }
 
     async function removeListing(){
