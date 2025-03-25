@@ -167,10 +167,14 @@ async function init() {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS Chats (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                participants JSON NOT NULL,
+                sellerId INT NOT NULL,
+                buyerId INT NOT NULL,
                 listingId INT NOT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (sellerId) REFERENCES Users(id),
+                FOREIGN KEY (buyerId) REFERENCES Users(id),
+                FOREIGN KEY (listingId) REFERENCES Listings(id)
             )
         `);
 

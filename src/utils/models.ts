@@ -114,7 +114,8 @@ export interface ChatMessage {
 
 export interface Chat {
     id: number;
-    participants: number[];
+    sellerId: number,
+    buyerId: number,
     messages: ChatMessage[];
     listingId: number,
     createdAt: Date;

@@ -14,6 +14,7 @@ import mysql from 'mysql2/promise';
 
 import http from 'http';
 import { Server } from "socket.io";
+import { fetchUserChats, onlyForHandshake } from './utils.js';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -127,9 +128,12 @@ server.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)
 })
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   const user = socket.request.user;
-  
+
+  let chats = await fetchUserChats(user.id)
+  socket.emit("init", chats);
+
 });
 
 io.engine.use(onlyForHandshake(sessionMiddleware));
@@ -144,14 +148,3 @@ io.engine.use(
     }
   }),
 );
-
-function onlyForHandshake(middleware) {
-  return (req, res, next) => {
-    const isHandshake = req._query.sid === undefined;
-    if (isHandshake) {
-      middleware(req, res, next);
-    } else {
-      next();
-    }
-  };
-}
