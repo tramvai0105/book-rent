@@ -17,7 +17,7 @@ config();
 privateRouter.use(isAuthenticatedAndVerified)
 
 privateRouter.get("/listings", async (req, res) => {
-    const userId = req.user.id; // Получаем идентификатор пользователя из запроса
+    const userId = req.user.id;
 
     try {
         const [rows] = await db.query(`
@@ -352,14 +352,14 @@ privateRouter.post('/changeAvatar', upload.single('avatar'), async (req, res) =>
 const changeNameSchema = {
     type: 'object',
     properties: {
-        newName: { type: 'string', minLength: 1 }, // Имя должно быть строкой и не пустым
+        newName: { type: 'string', minLength: 1 },
     },
-    required: ['newName'], // newName обязательно
+    required: ['newName'],
 };
 
 privateRouter.post('/changeName', async (req, res) => {
     const userId = req.user.id;
-    const { newName } = req.body; 
+    const { newName } = req.body;
 
     const validationResult = schemaInspector.validate(changeNameSchema, req.body);
     if (!validationResult.valid) {
@@ -386,18 +386,31 @@ privateRouter.post('/createChat', async (req, res) => {
 
     try {
         let [listing] = await db.query('SELECT * FROM Listings WHERE id = ?', [listingId]);
-        
+
         if (listing.length === 0) {
             return res.status(404).json({ message: 'Листинг не найден.' });
         }
         listing = listing[0];
 
-        const [existingChat] = await db.query('SELECT * FROM Chats WHERE (sellerId = ? AND buyerId = ?) OR (sellerId = ? AND buyerId = ?) AND listingId = ?', [userId, listing.userId, listing.userId, userId, listingId]);
+        const sellerId = listing.userId;
+
+        // if (userId === sellerId) {
+        //     return res.status(403).json({ message: 'Вы не можете создать этот чат.' });
+        // }
+
+        const [existingChat] = await db.query(`
+        SELECT * FROM Chats 
+        WHERE ((sellerId = ? AND buyerId = ?) 
+               OR (sellerId = ? AND buyerId = ?)) 
+        AND listingId = ?`,
+            [userId, sellerId, sellerId, userId, listingId]
+        );
+
         if (existingChat.length > 0) {
             return res.status(200).json({ message: 'Чат уже существует.' });
         }
-        
-        const [result] = await db.query('INSERT INTO Chats (sellerId, buyerId, listingId) VALUES (?, ?, ?)', [userId, listing.userId, listingId]);
+
+        const [result] = await db.query('INSERT INTO Chats (sellerId, buyerId, listingId) VALUES (?, ?, ?)', [sellerId, userId, listingId]);
 
         res.status(201).json({ message: 'Чат успешно создан.', chatId: result.insertId });
     } catch (error) {

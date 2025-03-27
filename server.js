@@ -3,6 +3,7 @@ import express from 'express'
 import authRouter from './api/routers/auth.js'
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import db from "./api/db.js";
 
 import session from 'express-session';
 import passport from './api/utils/passport/index.js';
@@ -44,16 +45,16 @@ const dbSessionOptions = {
 const connection = mysql.createPool(dbSessionOptions);
 
 // Настройка хранилища сессий
-const sessionStore = new (MySQLStore(session))({} , connection);
+const sessionStore = new (MySQLStore(session))({}, connection);
 
 const sessionMiddleware = session({
   secret: process.env.VITE_AUTH_SECRET,
   store: sessionStore,
   resave: false,
   saveUninitialized: true,
-  cookie: { 
-    secure: false, 
-    maxAge: 24 * 60 * 60 * 1000 
+  cookie: {
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000
   }, // В production`secure: true`,
 })
 
@@ -131,9 +132,50 @@ server.listen(port, () => {
 io.on('connection', async (socket) => {
   const user = socket.request.user;
 
-  let chats = await fetchUserChats(user.id)
-  socket.emit("init", chats);
+  let chats = await fetchUserChats(user.id);
+  chats.forEach(chat => {
+    socket.join(chat.id);
+  });
 
+  socket.on('requestInitData', async () => {
+    const userId = socket.request.user.id;
+    const chats = await fetchUserChats(userId);
+    chats.forEach(chat => {
+      socket.join(chat.id);
+    });
+    socket.emit('init', chats);
+  });
+
+  socket.on('sendMessage', async ({ chatId, message }) => {
+    try {
+      const [chat] = await db.query(`SELECT listingId, sellerId, buyerId FROM Chats WHERE id = ?`, [chatId]);
+
+      if (chat.length === 0) {
+        return socket.emit('error', 'Чат не найден');
+      }
+
+      const listingId = chat[0].listingId;
+      const receiverId = chat[0].sellerId === user.id ? chat[0].buyerId : chat[0].sellerId;
+
+      const result = await db.query(`
+        INSERT INTO ChatMessages (senderId, receiverId, chatId, message)
+        VALUES (?, ?, ?, ?)`,
+        [user.id, receiverId, chatId, message]
+      );
+
+      io.to(chatId).emit('newMessage', {
+        id: result.insertId,
+        senderId: user.id,
+        receiverId: receiverId,
+        chatId: chatId,
+        message: message,
+        createdAt: new Date()
+      });
+    } catch (error) {
+      console.error('Ошибка при сохранении сообщения:', error);
+      socket.emit('error', 'Не удалось отправить сообщение');
+    }
+  });
 });
 
 io.engine.use(onlyForHandshake(sessionMiddleware));

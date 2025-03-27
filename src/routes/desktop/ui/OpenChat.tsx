@@ -3,7 +3,7 @@ import icon from "../../../assets/message.svg";
 import { useNavigate } from 'react-router-dom';
 
 interface OpenChatProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     listingId: number;
 }
 
@@ -13,6 +13,15 @@ export default function OpenChat({ children, listingId }: OpenChatProps) {
     );
 
     const navigate = useNavigate();
+
+    const handleNavigate = (id: number) => {
+        if (id) {
+            navigate({
+                pathname: '/chat',
+                search: `?id=${id}`,
+            });
+        }
+    };
 
     async function chat() {
         try {
@@ -31,7 +40,7 @@ export default function OpenChat({ children, listingId }: OpenChatProps) {
 
             const data = await response.json();
             console.log('Чат успешно создан:', data);
-            navigate("/chat");
+            handleNavigate(listingId);
         } catch (error) {
             console.error('Ошибка:', error);
             alert(error.message);
@@ -40,10 +49,10 @@ export default function OpenChat({ children, listingId }: OpenChatProps) {
 
     return (
         <div>
-            {hasValidChildren ? (
+            {children && hasValidChildren ? (
                 <div onClick={chat}>{children}</div>
             ) : (
-                <img onClick={chat} src={icon} alt="Open chat" />
+                <img className='w-[25px] hover:invert h-[25px] cursor-pointer' title='Открыть чат' onClick={chat} src={icon} alt="Open chat" />
             )}
         </div>
     );

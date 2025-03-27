@@ -118,7 +118,7 @@ async function init() {
                 startDate DATE NOT NULL,
                 endDate DATE,
                 total DECIMAL(10, 2) DEFAULT 0,
-                status ENUM('pending', 'active', 'returnRequest', 'extendRequest', 'completed', 'cancelled') NOT NULL,
+                status ENUM('pending', 'active', 'returnRequest', 'extendRequest', 'dispute', 'completed', 'cancelled') NOT NULL,
                 deliveryTrackingNumber VARCHAR(255),
                 returnTrackingNumber VARCHAR(255),
                 penalty DECIMAL(10, 2),
@@ -193,30 +193,6 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Penaltys (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                userId INT NOT NULL,
-                rentalId INT NOT NULL,
-                amount DECIMAL(10, 2) NOT NULL,
-                reason TEXT NOT NULL,
-                status ENUM('pending', 'paid', 'cancelled') NOT NULL,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS Notifications (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                userId INT NOT NULL,
-                message TEXT NOT NULL,
-                type ENUM('rental_request', 'rental_confirmation', 'rental_completion', 'penalty', 'new_message') NOT NULL,
-                isRead BOOLEAN DEFAULT FALSE,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        await pool.query(`
             CREATE TABLE IF NOT EXISTS Moderations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 listingId INT NOT NULL,
@@ -228,35 +204,18 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Genres (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS ActivityLogs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                userId INT NOT NULL,
-                action VARCHAR(255) NOT NULL,
-                details TEXT,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS ReturnIssues (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                rentalId INT NOT NULL,
-                description TEXT NOT NULL,
-                photoUrls JSON,
-                status ENUM('pending', 'resolved') NOT NULL,
-                resolvedByModeratorId INT,
-                resolvedAt TIMESTAMP,
-                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        CREATE TABLE IF NOT EXISTS Disputes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            rentalId INT NOT NULL,
+            moderatorId INT NOT NULL,
+            description TEXT NOT NULL,
+            chatId INT NOT NULL,
+            images JSON,
+            status ENUM('pending', 'resolved', 'rejected') NOT NULL DEFAULT 'pending',
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (rentalId) REFERENCES Rentals(id) ON DELETE CASCADE,
+            FOREIGN KEY (moderatorId) REFERENCES users(id) ON DELETE CASCADE
             )
         `);
 

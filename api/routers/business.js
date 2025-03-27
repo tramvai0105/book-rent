@@ -626,6 +626,10 @@ businessRouter.post('/confirmReturn', async (req, res) => {
             return res.status(404).json({ message: 'Аренда не найдена' });
         }
 
+        if (rental[0].status === 'dispute') {
+            return res.status(403).json({ message: 'Возврат не может быть подтвержден, пока статус аренды - диспут.' });
+        }
+
         const [listing] = await db.query('SELECT * FROM listings WHERE id = ?', [rental[0].listingId]);
         if (listing.length === 0) {
             return res.status(404).json({ message: 'Объявление не найдено' });
@@ -694,6 +698,83 @@ businessRouter.post('/confirmReturn', async (req, res) => {
         }
 
         res.status(200).json({ message: 'Возврат книги успешно подтвержден' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: JSON.stringify(error) });
+    }
+});
+
+const createDisputeSchema = {
+    type: 'object',
+    properties: {
+        rentalId: { type: 'integer', min: 1, required: true },
+        description: { type: 'string', min: 10, max: 500, required: true },
+    },
+    required: ['rentalId', 'description'],
+};
+
+businessRouter.post('/createDispute', upload.array('photos'), async (req, res) => {
+    try {
+        const { rentalId, description, images } = req.body;
+        const userId = req.user.id;
+
+        const validationResult = schemaInspector.validate(createDisputeSchema, req.body);
+        if (!validationResult.valid) {
+            return res.status(400).json({ message: validationResult.format() });
+        }
+
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: 'Необходимо загрузить хотя бы одно фото.' });
+        }
+
+        const [existingDispute] = await db.query('SELECT * FROM Disputes WHERE rentalId = ?', [rentalId]);
+        if (existingDispute.length > 0) {
+            return res.status(400).json({ message: 'Диспут уже создан для этой аренды.' });
+        }
+
+        const [rental] = await db.query('SELECT * FROM rentals WHERE id = ?', [rentalId]);
+        if (rental.length === 0) {
+            return res.status(404).json({ message: 'Аренда не найдена' });
+        }
+
+        const renterId = rental[0].renterId;
+        const listingId = rental[0].listingId;
+
+        const [listing] = await db.query('SELECT * FROM listings WHERE id = ?', [listingId]);
+        if (listing.length === 0) {
+            return res.status(404).json({ message: 'Объявление не найдено' });
+        }
+
+        const sellerId = listing[0].userId;
+        if (userId !== sellerId) {
+            return res.status(403).json({ message: 'Доступ запрещен: вы не являетесь арендодателем этого объявления' });
+        }
+        console.log(sellerId, renterId)
+        let [chatId] = await db.query(`SELECT id FROM Chats WHERE (sellerId = ? AND buyerId = ?) AND listingId = ?`, [sellerId, renterId, listingId]);
+        console.log(chatId);
+        if (chatId.length === 0) {
+            const [result] = await db.query('INSERT INTO Chats (sellerId, buyerId, listingId) VALUES (?, ?, ?)', [sellerId, renterId, listingId]);
+            chatId = result.insertId;
+        } else {
+            chatId = chatId[0].id;
+        }
+
+        const dispute = {
+            rentalId,
+            moderatorId: 1,
+            description,
+            chatId: chatId,
+            images: JSON.stringify(req.files.map(file => file.filename)),
+            status: 'pending',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        await db.query('INSERT INTO Disputes SET ?', dispute);
+
+        await db.query('UPDATE rentals SET status = ? WHERE id = ?', ['dispute', rentalId]);
+
+        res.status(201).json({ message: 'Диспут успешно создан' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: JSON.stringify(error) });

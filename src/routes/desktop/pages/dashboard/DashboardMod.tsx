@@ -2,8 +2,9 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import book from "../../../../assets/book.jpg"
 import { useEffect } from "react"
 import store from "../../../../utils/store";
+import { observer } from "mobx-react-lite";
 
-export default function DashboardUser(){
+function _DashboardMod(){
 
     const location = useLocation();
     const navigate = useNavigate()
@@ -47,3 +48,6 @@ export default function DashboardUser(){
     </div>
     )
 }
+
+const DashboardMod = observer(_DashboardMod)
+export default DashboardMod;

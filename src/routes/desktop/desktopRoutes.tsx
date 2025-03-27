@@ -20,6 +20,7 @@ import Verify from "./pages/auth/Verify"
 import RecoverySend from "./pages/auth/RecoverySend"
 import RecoveryAccept from "./pages/auth/RecoveryAccept"
 import Chat from "./pages/chat/Chat"
+import DisputePage from "./pages/dashboard/moderator/DisputePage"
 
 const desktopRoutes = [
     {
@@ -50,6 +51,10 @@ const desktopRoutes = [
                 {
                   path: "/dashboard/mod/disputes",
                   element: <DisputesPage/>,
+                },
+                {
+                  path: "/dashboard/mod/disputes/:id",
+                  element: <DisputePage/>,
                 },
               ],
             },
