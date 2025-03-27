@@ -19,6 +19,11 @@ import { fetchUserChats, onlyForHandshake } from './utils.js';
 import { config } from 'dotenv';
 config();
 
+import { fileURLToPath } from 'url';
+import path from 'node:path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
 const port = process.env.PORT || 5173
