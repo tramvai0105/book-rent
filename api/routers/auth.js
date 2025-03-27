@@ -65,7 +65,7 @@ authRouter.post('/register', async (req, res) => {
 
         await db.query(
             'INSERT INTO users (email, password, verificated, name, city, avatarUrl, contactInfo, description, role, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-            [email, hash, false, email, city, "", contactInfo, "", "user", now, now]
+            [email, hash, false, email, city, "avatarDefault.jpg", contactInfo, "", "user", now, now]
         );
 
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -73,13 +73,22 @@ authRouter.post('/register', async (req, res) => {
         await db.query('INSERT INTO verifications (email, code) VALUES (?, ?)', [email, verificationCode]);
 
         const mailOptions = {
-            from: transporter.options.auth.user,
+            from: transporter.options.sender,
             to: email,
             subject: 'Подтверждение регистрации',
             text: `Ваш код подтверждения: ${verificationCode}`
         };
 
-        await transporter.sendMail(mailOptions);
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (mailError) {
+            // Если отправка не удалась, удаляем пользователя и запись верификации
+            await db.query('DELETE FROM users WHERE email = ?', [email]);
+            await db.query('DELETE FROM verifications WHERE email = ?', [email]);
+
+            console.log('Ошибка при отправке письма:', mailError);
+            return res.status(500).json({ message: 'Ошибка при отправке письма. Пользователь не был зарегистрирован.' });
+        }
 
         // Успешный ответ
         res.status(201).json({ message: 'Пользователь успешно зарегистрирован. Проверьте вашу почту для подтверждения.' });
@@ -103,7 +112,7 @@ authRouter.post('/retriveSend', async (req, res) => {
     await db.query('UPDATE users SET recovery_code = ? WHERE email = ?', [recoveryCode, email]);
 
     const mailOptions = {
-        from: transporter.options.auth.user,
+        from: transporter.options.sender,
         to: email,
         subject: 'Код восстановления',
         text: `Ваш код восстановления: ${recoveryCode}`
