@@ -17,6 +17,7 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
         setYearFrom('');
         setYearTo('');
         setServiceType('');
+        setFilters("city", "");
     }
 
     return (
