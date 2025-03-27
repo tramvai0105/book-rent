@@ -35,6 +35,7 @@ export const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use('/files', express.static(path.join(__dirname, 'files')));
 
 const dbSessionOptions = {
   host: process.env.VITE_DB_HOST,
@@ -67,6 +68,7 @@ app.use(passport.session())
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */
 let vite
+console.log("Working in production", isProduction);
 if (!isProduction) {
   const { createServer } = await import('vite')
   vite = await createServer({
