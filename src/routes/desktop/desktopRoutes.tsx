@@ -15,12 +15,12 @@ import DashboardMod from "./pages/dashboard/DashboardMod"
 import DashboardUser from "./pages/dashboard/DashboardUser"
 import ReviewsPage from "./pages/dashboard/moderator/ReviewsPage"
 import DisputesPage from "./pages/dashboard/moderator/DisputesPage"
-import EditListing from "./pages/dashboard/pages/editListing"
 import Verify from "./pages/auth/Verify"
 import RecoverySend from "./pages/auth/RecoverySend"
 import RecoveryAccept from "./pages/auth/RecoveryAccept"
 import Chat from "./pages/chat/Chat"
 import DisputePage from "./pages/dashboard/moderator/DisputePage"
+import EditListing from "./pages/dashboard/pages/EditListing"
 
 const desktopRoutes = [
     {

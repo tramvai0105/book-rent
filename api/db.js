@@ -69,7 +69,7 @@ async function init() {
         );`)
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Books (
+            CREATE TABLE IF NOT EXISTS books (
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 title VARCHAR(255) NOT NULL,
                 author VARCHAR(255) NOT NULL,
@@ -94,7 +94,7 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Listings (
+            CREATE TABLE IF NOT EXISTS listings (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 bookId INT NOT NULL,
                 userId INT NOT NULL,
@@ -113,7 +113,7 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Rentals (
+            CREATE TABLE IF NOT EXISTS rentals (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 listingId INT NOT NULL,
                 renterId INT NOT NULL,
@@ -130,7 +130,7 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Purchases (
+            CREATE TABLE IF NOT EXISTS purchases (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 listingId INT NOT NULL,
                 buyerId INT NOT NULL,
@@ -143,7 +143,7 @@ async function init() {
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Reviews (
+            CREATE TABLE IF NOT EXISTS reviews (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 reviewerId INT NOT NULL,
                 reviewedUserId INT NOT NULL,
@@ -163,39 +163,39 @@ async function init() {
             createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (renterId) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (listingId) REFERENCES Listings(id) ON DELETE CASCADE
+            FOREIGN KEY (listingId) REFERENCES listings(id) ON DELETE CASCADE
         );`)
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Chats (
+            CREATE TABLE IF NOT EXISTS chats (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 sellerId INT NOT NULL,
                 buyerId INT NOT NULL,
                 listingId INT NOT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (sellerId) REFERENCES Users(id),
-                FOREIGN KEY (buyerId) REFERENCES Users(id),
-                FOREIGN KEY (listingId) REFERENCES Listings(id)
+                FOREIGN KEY (sellerId) REFERENCES users(id),
+                FOREIGN KEY (buyerId) REFERENCES users(id),
+                FOREIGN KEY (listingId) REFERENCES listings(id)
             )
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS ChatMessages (
+            CREATE TABLE IF NOT EXISTS сhatmessages (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 senderId INT NOT NULL,
                 receiverId INT NOT NULL,
                 chatId INT NOT NULL,
                 message TEXT NOT NULL,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (senderId) REFERENCES Users(id),
-                FOREIGN KEY (receiverId) REFERENCES Users(id),
-                FOREIGN KEY (chatId) REFERENCES Chats(id)
+                FOREIGN KEY (senderId) REFERENCES users(id),
+                FOREIGN KEY (receiverId) REFERENCES users(id),
+                FOREIGN KEY (chatId) REFERENCES chats(id)
             )
         `);
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS Moderations (
+            CREATE TABLE IF NOT EXISTS moderations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 listingId INT NOT NULL,
                 moderatorId INT NOT NULL,
@@ -206,7 +206,7 @@ async function init() {
         `);
 
         await pool.query(`
-        CREATE TABLE IF NOT EXISTS Disputes (
+        CREATE TABLE IF NOT EXISTS disputes (
             id INT AUTO_INCREMENT PRIMARY KEY,
             rentalId INT NOT NULL,
             moderatorId INT NOT NULL,
@@ -216,7 +216,7 @@ async function init() {
             status ENUM('pending', 'resolved', 'rejected') NOT NULL DEFAULT 'pending',
             createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (rentalId) REFERENCES Rentals(id) ON DELETE CASCADE,
+            FOREIGN KEY (rentalId) REFERENCES rentals(id) ON DELETE CASCADE,
             FOREIGN KEY (moderatorId) REFERENCES users(id) ON DELETE CASCADE
             )
         `);
