@@ -8,7 +8,7 @@ async function init() {
         host: process.env.VITE_DB_HOST,
         user: process.env.VITE_DB_USER,
         password: process.env.VITE_DB_PASSWORD,
-        database: 'book',
+        database: 'books',
         waitForConnections: true,
         connectionLimit: 10,
         maxIdle: 10,
