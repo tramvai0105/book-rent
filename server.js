@@ -16,6 +16,8 @@ import mysql from 'mysql2/promise';
 import http from 'http';
 import { Server } from "socket.io";
 import { fetchUserChats, onlyForHandshake } from './utils.js';
+import { config } from 'dotenv';
+config();
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -35,9 +37,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const dbSessionOptions = {
-  host: 'localhost',
-  user: 'root',
-  password: '1234',
+  host: process.env.VITE_DB_HOST,
+  user: process.env.VITE_DB_USER,
+  password: process.env.VITE_DB_PASSWORD,
   database: 'sessions'
 };
 

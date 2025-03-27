@@ -4,16 +4,16 @@ import passport from 'passport'
 import bcrypt from "bcryptjs"
 import db from '../../db.js';
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.VITE_AUTH_GOOGLE_ID,
-    clientSecret: process.env.VITE_AUTH_GOOGLE_SECRET,
-    callbackURL: "http://localhost:5173/auth/google/callback"
-},
-    function (accessToken, refreshToken, profile, cb) {
-        console.log(accessToken, refreshToken, profile);
-        cb(null, profile);
-    }
-));
+// passport.use(new GoogleStrategy({
+//     clientID: process.env.VITE_AUTH_GOOGLE_ID,
+//     clientSecret: process.env.VITE_AUTH_GOOGLE_SECRET,
+//     callbackURL: "http://localhost:5173/auth/google/callback"
+// },
+//     function (accessToken, refreshToken, profile, cb) {
+//         console.log(accessToken, refreshToken, profile);
+//         cb(null, profile);
+//     }
+// ));
 
 passport.use(new LocalStrategy(
     async (username, password, done) => {

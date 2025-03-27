@@ -1,11 +1,13 @@
 import mysql from 'mysql2/promise';
 import bcrypt from "bcryptjs"
+import { config } from 'dotenv';
+config();
 
 async function init() {
     const pool = mysql.createPool({
-        host: 'localhost',
-        user: 'root',
-        password: '1234',
+        host: process.env.VITE_DB_HOST,
+        user: process.env.VITE_DB_USER,
+        password: process.env.VITE_DB_PASSWORD,
         database: 'book',
         waitForConnections: true,
         connectionLimit: 10,
