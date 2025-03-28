@@ -18,6 +18,11 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
         setYearTo('');
         setServiceType('');
         setFilters("city", "");
+        setFilters("priceFrom", "");
+        setFilters("priceTo", "");
+        setFilters("yearFrom", "");
+        setFilters("yearTo", "");
+        setFilters("serviceType", "");
     }
 
     return (

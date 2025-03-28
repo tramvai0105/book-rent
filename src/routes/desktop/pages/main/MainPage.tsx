@@ -68,7 +68,7 @@ export default function MainPage() {
             const matchesCity = filter.city ? card.city.toLowerCase().includes(filter.city.toLowerCase()) : true;
             const matchesYearFrom = filter.yearFrom ? card.publicationYear >= Number(filter.yearFrom) : true;
             const matchesYearTo = filter.yearTo ? card.publicationYear <= Number(filter.yearTo) : true;
-            const matchesServiceType = filter.serviceType ? card.interactionType === filter.serviceType : true;
+            const matchesServiceType = filter.serviceType ? (card.interactionType === filter.serviceType || card.interactionType === "both") : true;
 
             let matchesPrice = true;
             if (card.rentPricePerMonth) {
