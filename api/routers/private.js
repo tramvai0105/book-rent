@@ -231,6 +231,32 @@ privateRouter.get('/balance', async (req, res) => {
     }
 });
 
+privateRouter.post('/balance/add', async (req, res) => {
+    const userId = req.user.id; // Получаем ID пользователя из запроса
+    let { amount } = req.body; // Получаем сумму из тела запроса
+
+    amount = Number(amount)
+    if (!isNaN(amount) && amount >= 0) {
+        return res.status(400).json({ message: 'Сумма должна быть положительным числом' });
+    }
+
+    try {
+        // Обновляем основной баланс пользователя
+        const [result] = await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [amount, userId]);
+
+        // Проверяем, был ли обновлен баланс
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+
+        // Возвращаем успешный ответ
+        res.json({ message: 'Баланс успешно пополнен', newBalance: amount });
+    } catch (error) {
+        console.error("Ошибка при пополнении баланса:", error);
+        res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+});
+
 privateRouter.get('/history', async (req, res) => {
     const userId = req.user.id;
 

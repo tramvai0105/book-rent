@@ -41,7 +41,7 @@ async function init() {
         `);
 
         const email = 'admin@gmail.com';
-        const _password = 'admin'
+        const _password = process.env.VITE_ADMIN_PASSWORD
         const password = await bcrypt.hash(_password, 10);
         const name = 'admin@gmail.com';
         const role = 'moderator';
