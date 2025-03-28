@@ -12,6 +12,7 @@ export default function EditListing() {
         phoneNumber: '',
         description: '',
         wealth: '',
+        city: '',
         interactionType: '',
         rentPricePerMonth: '',
         deposit: '',
@@ -38,6 +39,7 @@ export default function EditListing() {
                     phoneNumber: data.phoneNumber,
                     description: data.description,
                     wealth: data.wealth,
+                    city: data.city,
                     interactionType: data.interactionType,
                     rentPricePerMonth: Number(data.rentPrice).toFixed(0) || "0",
                     deposit: Number(data.deposit).toFixed(0) || "0",
@@ -153,6 +155,15 @@ export default function EditListing() {
                 value={formData.address}
                 onChange={handleChange}
                 placeholder='Введите адрес встречи...'
+                className='w-full pl-2 h-[45px] bg-main rounded-md'
+                required
+            />
+            <h2 className='text-xl font-bold text-lbrown'>Город</h2>
+            <input
+                name='city'
+                value={formData.city}
+                onChange={handleChange}
+                placeholder='Введите город...'
                 className='w-full pl-2 h-[45px] bg-main rounded-md'
                 required
             />
