@@ -68,12 +68,12 @@ async function init() {
             WHERE NOT EXISTS (
                 SELECT 1 FROM users WHERE email = ?
             )
-        `, [email, password, name, role, verificated, balance]);
+        `, [email, password, name, role, verificated, balance, email]);
 
         await pool.query(`
             INSERT INTO users (email, password, name, role, verificated, balance)
             SELECT ?, ?, ?, ?, ?, ?
-        `, [useremail, userpassword, username, userrole, userverificated, userbalance]);
+        `, [useremail, userpassword, username, userrole, userverificated, userbalance, useremail]);
 
         await pool.query(`CREATE TABLE IF NOT EXISTS transactions (
             id INT PRIMARY KEY AUTO_INCREMENT,
