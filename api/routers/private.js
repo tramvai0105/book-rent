@@ -95,6 +95,13 @@ privateRouter.delete("/listings/remove/:id", async (req, res) => {
             return res.status(404).json({ message: "Объявление не найдено или не принадлежит пользователю." });
         }
 
+        const listing = rows[0];
+
+        // Проверяем статус объявления
+        if (listing.status === "closed") {
+            return res.status(403).json({ message: "Нельзя удалить закрытое объявление." });
+        }
+
         // Удаляем все записи о модерации для данного объявления
         await db.query(`
             DELETE FROM Moderations 

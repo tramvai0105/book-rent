@@ -456,6 +456,9 @@ businessRouter.post('/confirmPurchase', async (req, res) => {
             await db.query('INSERT INTO transactions SET ?', transaction);
         }
 
+        // Обновляем статус объявления на "closed"
+        await db.query('UPDATE listings SET status = "closed" WHERE id = ?', [purchase[0].listingId]);
+
         res.status(200).json({ message: 'Покупка успешно подтверждена и баланс обновлен' });
     } catch (error) {
         console.error(error);
