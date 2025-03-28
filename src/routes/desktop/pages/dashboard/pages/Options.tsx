@@ -6,7 +6,6 @@ function _Options() {
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        console.log(file)
         if (file) {
             const formData = new FormData();
             formData.append('avatar', file);
@@ -20,10 +19,9 @@ function _Options() {
                 }
                 const data = await response.json();
                 alert(data.message || 'Аватарка успешно загружена!');
-                await store.fetchUser();
+                store.fetchUser();
             } catch (error) {
                 console.error('Ошибка при загрузке аватарки:', error);
-                alert('Ошибка при загрузке аватарки.');
             }
         }
     };
@@ -47,10 +45,9 @@ function _Options() {
 
             const data = await response.json();
             alert(data.message || 'Имя успешно изменено!');
-            await store.fetchUser();
+            store.fetchUser();
         } catch (error) {
             console.error('Ошибка при изменении имени:', error);
-            alert('Ошибка при изменении имени.');
         }
     };
 

@@ -135,7 +135,7 @@ const io = new Server(server, {
 }); // Сервер сокета
 
 server.listen(port, () => {
-  console.log(`Server started at http://localhost:${port}`)
+  console.log(`Server started at http://localhost:${port} 123`)
 })
 
 io.on('connection', async (socket) => {
