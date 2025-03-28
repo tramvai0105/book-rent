@@ -102,7 +102,7 @@ function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
                         {listing.interactionType == "rent"?<div><span className="font-bold">Депозит:</span> {listing.deposit}</div>:<></>}
                     </div>
                     <div className="mt-auto ml-auto mb-4 mr-14 flex flex-row gap-8">
-                        {listing.status != "closed" && listing.status != "pending" ?<button onClick={()=>navigate(`./edit/${listing.id}`)} className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Редактировать</button>:<></>}
+                        {listing.status != "closed" && listing.status != "process" ?<button onClick={()=>navigate(`./edit/${listing.id}`)} className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Редактировать</button>:<></>}
                         <button onClick={removeListing} className="border-dark cursor-pointer rounded-md border-[1px] hover:bg-dark hover:text-white px-8 py-2">Удалить</button>
                     </div>
             </div>

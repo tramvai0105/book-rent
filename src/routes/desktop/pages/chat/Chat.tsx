@@ -36,6 +36,7 @@ function _Chat() {
 
     function sendMessage() {
         socket.emit("sendMessage", { chatId: chats[currentChatId].id, message: messageInputData })
+        setMessageInputData("")
     }
 
     function onNewMessage(msg: ChatMessage) {
@@ -116,11 +117,14 @@ function _Chat() {
                                 </div>
                                 <div className="flex flex-row items-center gap-2">
                                     <span className="text-lg text-center">По объявлению </span>
-                                    <button className="bg-lbrown px-4 text-xl rounded-md text-white w-fit ">{chats[currentChatId].bookTitle}</button>
+                                    <button onClick={()=>navigate(`/book/${chats[currentChatId].listingId}`)} className="bg-lbrown px-4 text-xl rounded-md text-white w-fit ">{chats[currentChatId].bookTitle}</button>
                                 </div>
                             </div>
                             <div ref={messagesRef} className="flex-grow overflow-y-auto flex flex-col gap-2">
-                                {chats[currentChatId].messages.map((m, i) => <MessageItem own={store && store.getUserData() ? m.senderId == store.getUserData().id : false} avatar={chats[currentChatId].otherUserAvatar} key={i} data={m} />)}
+                                {chats[currentChatId].messages.map((m, i) => {
+                                let userData = store.getUserData()
+                                let isOwner = userData && m.senderId == userData.id
+                                return <MessageItem own={isOwner ? true : false} avatar={isOwner ? userData ? userData.avatarUrl : chats[currentChatId].otherUserAvatar : chats[currentChatId].otherUserAvatar} key={i} data={m} />})}
                             </div>
                             <div className="flex flex-none flex-row gap-2">
                                 <textarea value={messageInputData} onChange={(e) => setMessageInputData(e.target.value)} className="w-full pl-1 pt-1 mt-auto h-[125px] resize-none bg-white rounded-md" />

@@ -359,7 +359,7 @@ moderatorRouter.post('/transferDepositToSeller', async (req, res) => {
         }
 
         // Проверяем, существует ли диспут
-        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" id = ?', [disputeId]);
+        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" AND id = ?', [disputeId]);
         if (dispute.length === 0) {
             return res.status(404).json({ message: 'Диспут не найден' });
         }
@@ -418,7 +418,7 @@ moderatorRouter.post('/returnDepositToRenter', async (req, res) => {
             return res.status(400).json({ message: validationResult.format() });
         }
 
-        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" id = ?', [disputeId]);
+        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" AND id = ?', [disputeId]);
         if (dispute.length === 0) {
             return res.status(404).json({ message: 'Диспут не найден' });
         }
@@ -439,7 +439,6 @@ moderatorRouter.post('/returnDepositToRenter', async (req, res) => {
         const sellerId = listing[0].userId;
 
         await db.query('UPDATE users SET balance = balance + ?, frozenBalance = frozenBalance - ? WHERE id = ?', [depositAmount, depositAmount, renterId]);
-        await db.query('UPDATE users SET frozenBalance = frozenBalance - ? WHERE id = ?', [depositAmount, sellerId]);
 
         // Создаем запись о транзакции
         const transaction = {

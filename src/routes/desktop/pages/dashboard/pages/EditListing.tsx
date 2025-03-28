@@ -13,7 +13,7 @@ export default function EditListing() {
         description: '',
         wealth: '',
         interactionType: '',
-        rentPrice: '',
+        rentPricePerMonth: '',
         deposit: '',
         salePrice: '',
         photos: null,
@@ -39,9 +39,9 @@ export default function EditListing() {
                     description: data.description,
                     wealth: data.wealth,
                     interactionType: data.interactionType,
-                    rentPrice: data.rentPrice || 0,
-                    deposit: data.deposit || 0,
-                    salePrice: data.salePrice || 0,
+                    rentPricePerMonth: Number(data.rentPrice).toFixed(0) || "0",
+                    deposit: Number(data.deposit).toFixed(0) || "0",
+                    salePrice: Number(data.salePrice).toFixed(0) || "0",
                     photos: null,
                 });
             } catch (error) {
@@ -77,6 +77,13 @@ export default function EditListing() {
         if(!id){
             return;
         }
+        if(formData.interactionType == "rent"){
+            formData.salePrice = "0";
+        }
+        if(formData.interactionType == "sale"){
+            formData.rentPricePerMonth = "0";
+            formData.deposit = "0"
+        }
         for (const key in formData) {
             if (key === 'photos' && formData.photos) {
                 for (let i = 0; i < formData.photos.length; i++) {
@@ -102,6 +109,7 @@ export default function EditListing() {
 
     return (
         <form className='flex w-full h-full flex-col gap-2' onSubmit={handleSubmit}>
+            <h1 className='text-2xl'>Редактирование объявления</h1>
             <div className='w-full h-[1px] bg-dark'></div>
             <h2 className='text-xl font-bold text-lbrown'>Название книги</h2>
             <input
@@ -203,11 +211,13 @@ export default function EditListing() {
                     <div className='w-1/3 flex flex-row gap-4 items-center'>
                         <h2 className='text-base font-bold text-lbrown'>Стоимость</h2>
                         <input
-                            name='rentPrice'
-                            value={formData.rentPrice}
+                            type='number'
+                            name='rentPricePerMonth'
+                            value={formData.rentPricePerMonth}
                             onChange={handleChange}
                             placeholder=''
                             className='w-[40%] pl-2 h-[35px] bg-main rounded-md'
+                            required={formData.interactionType == "rent" || formData.interactionType == "both"}
                         />
                     </div>
                     <div className='w-1/3 flex flex-row gap-4 items-center'>
@@ -217,6 +227,8 @@ export default function EditListing() {
                             value={formData.deposit}
                             onChange={handleChange}
                             placeholder=''
+                            required={formData.interactionType == "rent" || formData.interactionType == "both"}
+                            type='number'
                             className='w-[40%] pl-2 h-[35px] bg-main rounded-md'
                         />
                     </div>
@@ -239,10 +251,22 @@ export default function EditListing() {
                             value={formData.salePrice}
                             onChange={handleChange}
                             placeholder=''
+                            type='number'
+                            required={formData.interactionType == "sale" || formData.interactionType == "both"}
                             className='pl-2 w-[40%] h-[35px] bg-main rounded-md'
                         />
                     </div>
                 </div>
+                <label className='w-1/3 flex flex-row items-center gap-4 text-xl font-bold text-lbrown'>
+                    <input
+                        type="radio"
+                        name="interactionType"
+                        value="both"
+                        checked={formData.interactionType === 'both'}
+                        onChange={handleChange}
+                    />
+                    Оба способа
+                </label>
             </div>
             <button type="submit" className='mt-4 cursor-pointer bg-lbrown text-white rounded-md p-2'>Изменить книгу</button>
         </form>

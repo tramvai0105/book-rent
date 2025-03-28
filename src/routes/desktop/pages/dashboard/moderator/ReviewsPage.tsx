@@ -36,6 +36,12 @@ function Review({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
         'rejected': "Отклонено"
     }
 
+    const intTypes = {
+        "sale" : "Продажа",
+        "rent" : "Аренда",
+        "both" : "Продажа и аренда",
+    }
+
     async function publishListing(){
         let res = await fetch(`/api/m/publish/${listing.id}`,
          {method: "PUT"})
@@ -91,6 +97,10 @@ function Review({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
                         <p className="font-semibold">Описание</p>
                         <div className="w-full whitespace-pre-wrap resize-none p-2 rounded-lg">{listing.description}</div>
                     </div>
+                    <div className="mb-4">
+                        <p className="font-semibold">Тип сделки</p>
+                        <div className="w-full whitespace-pre-wrap resize-none p-2 rounded-lg">{intTypes[listing.interactionType]}</div>
+                    </div>
                 </div>
             </div>
             <div className='flex flex-row justify-between'>
@@ -105,19 +115,19 @@ function Review({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
                 </div>
                 <div className="flex text-lg gap-10 w-2/3 flex-row items-center mt-4">
                     <div className='flex flex-col gap-4 ml-auto items-center'>
-                        <p className=''>
+                        {listing.interactionType == "sale" || listing.interactionType == "both"?<p className=''>
                             <span className="font-semibold mr-2">Стоимость:</span>
                             <span>{listing.salePrice}</span>
-                        </p>
+                        </p>:<div>ㅤ</div>}
                         <button onClick={publishListing} className="border text-xl border-dark bg-green-400 rounded-full px-7 py-2 cursor-pointer hover:bg-green-700 hover:text-white ">
                             Опубликовать
                         </button>
                     </div>
                     <div className='flex flex-col gap-4 mr-8 items-center'>
-                        <p className=''>
+                        {listing.interactionType == "rent" || listing.interactionType == "both"?<p className=''>
                             <span className="font-semibold mr-2">Аренда:</span>
                             <span>{`${(Number(listing.rentPricePerMonth) + Number(listing.deposit)).toFixed(0)} ₽ (с учетом залога - ${Number(listing.deposit).toFixed(0)} ₽)`}</span>
-                        </p>
+                        </p>:<div>ㅤ</div>}
                         <button onClick={rejectListing} className="border text-xl border-dark bg-red-400 rounded-full px-7 py-2 cursor-pointer hover:bg-red-700 hover:text-white ">
                             Отклонить
                         </button>

@@ -423,7 +423,7 @@ privateRouter.post('/changeAvatar', upload.single('avatar'), async (req, res) =>
         res.status(200).json({ message: 'Аватарка успешно изменена', avatarUrl });
     } catch (error) {
         console.error('Ошибка при изменении аватарки:', error);
-        res.status(500).json({ message: 'Произошла ошибка при изменении аватарки' });
+        res.status(500).json({ message: JSON.stringify(error) });
     }
 });
 

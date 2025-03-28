@@ -1,6 +1,7 @@
 import React from 'react';
 import icon from "../../../assets/message.svg";
 import { useNavigate } from 'react-router-dom';
+import store from '../../../utils/store';
 
 interface OpenChatProps {
     children?: React.ReactNode;
@@ -25,6 +26,10 @@ export default function OpenChat({ children, listingId }: OpenChatProps) {
 
     async function chat() {
         try {
+            if(!store.getUserData()){
+                alert("Авторизируйтесь для доступа к чату")
+                return;
+            }
             const response = await fetch('/api/private/createChat', {
                 method: 'POST',
                 headers: {

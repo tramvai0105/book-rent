@@ -23,7 +23,6 @@ const Login = () => {
                 body: JSON.stringify({ username: email, password }),
             });
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
                 setSuccess('Вход выполнен успешно!');
                 setEmail('');

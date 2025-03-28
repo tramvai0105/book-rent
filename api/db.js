@@ -54,13 +54,26 @@ async function init() {
         const verificated = 1;
         const balance = 10000;
 
+        const useremail = 'user@gmail.com';
+        const user_password = "123123"
+        const userpassword = await bcrypt.hash(user_password, 10);
+        const username = 'user@gmail.com';
+        const userrole = 'user';
+        const userverificated = 1;
+        const userbalance = 10000;
+
         await pool.query(`
             INSERT INTO users (email, password, name, role, verificated, balance)
             SELECT ?, ?, ?, ?, ?, ?
             WHERE NOT EXISTS (
                 SELECT 1 FROM users WHERE email = ?
             )
-        `, [email, password, name, role, verificated, balance, email]);
+        `, [email, password, name, role, verificated, balance]);
+
+        await pool.query(`
+            INSERT INTO users (email, password, name, role, verificated, balance)
+            SELECT ?, ?, ?, ?, ?, ?
+        `, [useremail, userpassword, username, userrole, userverificated, userbalance]);
 
         await pool.query(`CREATE TABLE IF NOT EXISTS transactions (
             id INT PRIMARY KEY AUTO_INCREMENT,

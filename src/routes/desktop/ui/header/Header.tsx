@@ -9,12 +9,13 @@ function _Header() {
     const navigate = useNavigate();
 
     return (<header className="h-[55px] drop-shadow-md px-[5%] text-black bg-main w-full flex items-center">
-        <div onClick={() => navigate("/")} className='flex group flex-row gap-2 items-center cursor-pointer'>
+        <div onClick={() => {navigate("/"); navigate(0)}} className='flex group flex-row gap-2 items-center cursor-pointer'>
             <img className='w-[55px] h-[55px] group-hover:invert' src={logo} />
             <h1 className="text-4xl drop-shadow-lg group-hover:text-white">LitFond</h1>
         </div>
         {store.getAuthorized()
             ? <div className='text-xl flex flex-row items-center ml-auto gap-6'>
+                <h2 onClick={() => navigate("/about")} className='cursor-pointer hover:text-white'>О платформе</h2>
                 {!store.getUserData()?.verificated ? <button onClick={() => navigate("/verify")}
                     className='px-3 py-1 bg-red-300 hover:underline hover:bg-red-400 hover:text-white cursor-pointer rounded-lg text-white'>
                     Вам нужно подтвердить почту.

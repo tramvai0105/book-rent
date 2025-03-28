@@ -129,7 +129,7 @@ export default function DisputePage() {
             <div className='flex flex-col gap-2'>
                 <span className='font-bold'>Фото доказательств:</span>
                 <div className='flex flex-row gap-2'>
-                    {dispute.images.map((img, i) => <img className='w-[200px] h-[200px]' key={i} src={`/files/${img}`} />)}
+                    {dispute.images.map((img, i) => <img className='w-[200px] h-[200px] object-cover' key={i} src={`/files/${img}`} />)}
                 </div>
             </div>
             <span className='text-xl font-bold'>Чат</span>

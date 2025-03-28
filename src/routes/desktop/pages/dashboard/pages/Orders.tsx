@@ -231,6 +231,7 @@ function OrderSellRent({ data, rf }: { data: RentalAsLessor, rf: () => Promise<v
         let body = await res.json();
         store.fetchUser()
         alert(body.message);
+        setDisputeModal(false);
         rf()
     }
 
@@ -240,14 +241,29 @@ function OrderSellRent({ data, rf }: { data: RentalAsLessor, rf: () => Promise<v
             description: '',
             photos: null,
         })
+        setPreviewImages([])
         setDisputeModal(true);
+    }
+
+    function closeModal(){
+        const close = confirm("Точно закрыть окно? Данные не сохранятся")
+        if(!close){
+            return
+        }
+        setFormData({
+            rentalId: data.rentalId,
+            description: '',
+            photos: null,
+        })
+        setPreviewImages([])
+        setDisputeModal(false);
     }
 
     return (
         <div className="flex bg-bright rounded-xl gap-4 text-lg flex-row items-center px-4 py-2">
             {disputeModal
                 ?
-                <div onClick={() => setDisputeModal(false)} className="absolute cursor-pointer flex items-center justify-center bg-black/50 top-0 bottom-0 left-0 right-0">
+                <div onClick={closeModal} className="absolute cursor-pointer flex items-center justify-center bg-black/50 top-0 bottom-0 left-0 right-0">
                     <form onSubmit={createDispute} onClick={(e) => { e.stopPropagation() }} 
                     className="bg-white w-[60%] gap-4 flex flex-col p-10 cursor-default">
                         <h2 className='text-xl font-bold text-lbrown'>Загрузите изображения(минимум одно)</h2>

@@ -43,9 +43,19 @@ export default function NewListing() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData();
-
+        if(formData.interactionType == "rent"){
+            formData.salePrice = "0";
+        }
+        if(formData.interactionType == "sale"){
+            formData.rentPricePerMonth = "0";
+            formData.deposit = "0"
+        }
         for (const key in formData) {
             if (key === 'photos') {
+                if(!formData.photos || formData.photos.length == 0){
+                    alert("Добавьте хотя бы одно фото");
+                    return;
+                }
                 for (let i = 0; i < formData.photos.length; i++) {
                     data.append('photos', formData.photos[i]);
                 }
@@ -60,7 +70,7 @@ export default function NewListing() {
                 body: data,
             });
             const result = await response.json();
-            navigate(".")
+            navigate("/dashboard")
             alert(result.message);
         } catch (error) {
             console.error(error);
@@ -70,6 +80,7 @@ export default function NewListing() {
 
     return (
         <form className='flex w-full h-full flex-col gap-2' onSubmit={handleSubmit}>
+            <h1 className='text-2xl'>Создание нового объявления</h1>
             <div className='w-full h-[1px] bg-dark'></div>
             <h2 className='text-xl font-bold text-lbrown'>Название книги</h2>
             <input
@@ -181,20 +192,24 @@ export default function NewListing() {
                         <h2 className='text-base font-bold text-lbrown'>Стоимость</h2>
                         <input
                             name='rentPricePerMonth'
+                            type='number'
                             value={formData.rentPricePerMonth}
                             onChange={handleChange}
                             placeholder=''
                             className='w-[40%] pl-2 h-[35px] bg-main rounded-md'
+                            required={formData.interactionType == "rent" || formData.interactionType == "both"}
                         />
                     </div>
                     <div className='w-1/3 flex flex-row gap-4 items-center'>
                         <h2 className='text-base font-bold text-lbrown'>Сумма залога</h2>
                         <input
                             name='deposit'
+                            type='number'
                             value={formData.deposit}
                             onChange={handleChange}
                             placeholder=''
                             className='w-[40%] pl-2 h-[35px] bg-main rounded-md'
+                            required={formData.interactionType == "rent" || formData.interactionType == "both"}
                         />
                     </div>
                 </div>
@@ -212,11 +227,13 @@ export default function NewListing() {
                     <div className='w-1/3 flex flex-row gap-4 items-center'>
                         <h2 className='text-base font-bold text-lbrown'>Стоимость</h2>
                         <input
+                            type='number'
                             name='salePrice'
                             value={formData.salePrice}
                             onChange={handleChange}
                             placeholder=''
                             className='pl-2 w-[40%] h-[35px] bg-main rounded-md'
+                            required={formData.interactionType == "sale" || formData.interactionType == "both"}
                         />
                     </div>
                 </div>

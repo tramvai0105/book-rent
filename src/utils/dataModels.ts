@@ -43,7 +43,7 @@ export interface ListingData {
     phoneNumber: string,
     address: string,
     deliveryMethod: 'meetup' | 'post',
-    status: 'pending' | 'approved' | 'rejected' | 'closed',
+    status: 'pending' | 'approved' | 'process' | 'rejected' | 'closed',
     rejectionReason: string,
     createdAt: Date,
     updatedAt: Date,

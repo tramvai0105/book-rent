@@ -110,8 +110,8 @@ businessRouter.put('/editBook', upload.array('photos'), async (req, res) => {
             return res.status(403).json({ message: 'У вас нет прав на редактирование этого объявления.' });
         }
 
-        if (listing.status === 'pending' || listing.status === 'closed') {
-            return res.status(400).json({ message: 'Нельзя редактировать объявление с статусом "pending" или "closed".' });
+        if (listing.status === 'process' || listing.status === 'closed') {
+            return res.status(400).json({ message: 'Нельзя редактировать объявление с статусом "process" или "closed".' });
         }
 
         await db.query('DELETE FROM Moderations WHERE listingId = ?', [listingId]);
@@ -471,7 +471,7 @@ businessRouter.post("/requestExtend", async (req, res) => {
     const userId = req.user.id; // Получаем ID пользователя из запроса
 
     try {
-        // Проверяем, существует ли аренда и принадлежит ли она пользователю
+        // Проверяем, существует ли аренда и арендатор ли он
         const [rental] = await db.query(`
             SELECT * FROM Rentals 
             WHERE id = ? AND renterId = ?
@@ -485,6 +485,33 @@ businessRouter.post("/requestExtend", async (req, res) => {
         const currentEndDate = new Date(rental[0].endDate);
         // Устанавливаем новую дату окончания на месяц вперед
         const newEndDate = new Date(currentEndDate.setMonth(currentEndDate.getMonth() + 1));
+
+        // Получаем информацию о пользователе, включая баланс
+        const [user] = await db.query(`
+            SELECT balance FROM Users 
+            WHERE id = ?
+        `, [userId]);
+
+        if (user.length === 0) {
+            return res.status(404).json({ message: "Пользователь не найден." });
+        }
+
+        // Получаем информацию о листинге, чтобы получить цену аренды и ID владельца
+        const [listing] = await db.query(`
+            SELECT rentPricePerMonth FROM Listings 
+            WHERE id = ?
+        `, [rental[0].listingId]);
+
+        const userBalance = user[0].balance;
+        const extensionCost = listing[0].rentPricePerMonth;
+
+        // Проверяем, достаточно ли средств на балансе
+        if (userBalance < extensionCost) {
+            return res.status(400).json({ message: "Недостаточно средств на балансе для продления аренды." });
+        }
+
+        // Обновляем баланс пользователя: вычитаем сумму из баланса и добавляем в замороженный баланс
+        await db.query('UPDATE users SET balance = balance - ?, frozenBalance = frozenBalance + ? WHERE id = ?', [extensionCost, extensionCost, req.user.id]);
 
         // Обновляем дату окончания аренды и устанавливаем статус в 'extendRequest'
         await db.query(`
@@ -539,9 +566,10 @@ businessRouter.post("/confirmExtend", async (req, res) => {
 
         const rentPrice = listing[0].rentPricePerMonth;
         const ownerId = listing[0].userId;
+        const renterId = rental[0].renterId
 
-        // Списываем сумму аренды с замороженного баланса арендатора
-        await db.query('UPDATE users SET balance = balance - ? WHERE id = ?', [rentPrice, userId]);
+        // Списываем сумму аренды с баланса арендатора
+        await db.query('UPDATE users SET frozenBalance = frozenBalance - ? WHERE id = ?', [rentPrice, renterId]);
 
         // Обновляем баланс владельца
         await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [rentPrice * 0.9, ownerId]);
@@ -687,9 +715,9 @@ businessRouter.post('/confirmReturn', async (req, res) => {
             await db.query('UPDATE rentals SET endDate = ?, status = "completed" WHERE id = ?', [currentDate, rentalId]);
             await db.query('UPDATE listings SET status = "closed" WHERE id = ?', [rental[0].listingId]);
 
-            // Возвращаем залог с замороженного баланса владельца
+            // Возвращаем залог с замороженного баланса арендатора
             await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [depositAmount, renterId]);
-            await db.query('UPDATE users SET frozenBalance = frozenBalance - ? WHERE id = ?', [depositAmount, listing[0].userId]);
+            await db.query('UPDATE users SET frozenBalance = frozenBalance - ? WHERE id = ?', [depositAmount, renterId]);
 
             // Создаем запись о транзакции за возврат залога
             const transaction = {
@@ -717,8 +745,8 @@ businessRouter.post('/confirmReturn', async (req, res) => {
 const createDisputeSchema = {
     type: 'object',
     properties: {
-        rentalId: { type: 'integer', min: 1, required: true },
-        description: { type: 'string', min: 10, max: 500, required: true },
+        rentalId: { type: 'integer', minLength: 1, required: true },
+        description: { type: 'string', minLength: 10, maxLength: 500, required: true },
     },
     required: ['rentalId', 'description'],
 };
@@ -729,14 +757,20 @@ businessRouter.post('/createDispute', upload.array('photos'), async (req, res) =
         const userId = req.user.id;
 
         const validationResult = schemaInspector.validate(createDisputeSchema, req.body);
+        console.log(validationResult)
         if (!validationResult.valid) {
             return res.status(400).json({ message: validationResult.format() });
         }
 
+        if (description.length < 10) {
+            return res.status(400).json({ message: 'Необходимая длина описания от 10 символов' });
+        }
+
+
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'Необходимо загрузить хотя бы одно фото.' });
         }
-
+        
         const [existingDispute] = await db.query('SELECT * FROM Disputes WHERE rentalId = ?', [rentalId]);
         if (existingDispute.length > 0) {
             return res.status(400).json({ message: 'Диспут уже создан для этой аренды.' });

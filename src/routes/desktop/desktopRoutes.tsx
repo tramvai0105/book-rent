@@ -21,6 +21,7 @@ import RecoveryAccept from "./pages/auth/RecoveryAccept"
 import Chat from "./pages/chat/Chat"
 import DisputePage from "./pages/dashboard/moderator/DisputePage"
 import EditListing from "./pages/dashboard/pages/EditListing"
+import About from "./pages/about/About"
 
 const desktopRoutes = [
     {
@@ -35,6 +36,10 @@ const desktopRoutes = [
         {
           path: "/chat",
           element: <Chat/>
+        },
+        {
+          path: "/about",
+          element: <About/>
         },
         {
           path: "/dashboard",

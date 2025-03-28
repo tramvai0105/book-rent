@@ -37,12 +37,13 @@ export default function MainPage() {
                 const name = searchParams.get('name');
                 const response = await fetch(`/api/public/listings${name ? `?name=${encodeURIComponent(name)}` : ''}`);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    fetchBookCards()
+                    return;
                 }
                 const data: BookCardData[] = await response.json();
                 setBookCards(data);
             } catch (error) {
-                alert(error.message);
+                console.log(error.message);
             } finally {
                 setLoading(false);
             }
@@ -96,8 +97,7 @@ export default function MainPage() {
 
     return (
         <div className="w-full mt-8 gap-4 px-[3%] h-fit flex flex-col">
-            <div className="flex flex-row gap-3">
-                <div className="w-[320px]"></div>
+            <div className="flex flex-row w-full justify-center gap-3">
                 <SearchBar csf={changeShowFilter}/>
             </div>
             {showFilter

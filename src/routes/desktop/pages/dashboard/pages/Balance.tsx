@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState } from 'react'
 import YandexCityAutocomplete from '../../../ui/YandexCityAutocomplete';
+import store from '../../../../../utils/store';
+import { observer } from 'mobx-react-lite';
 
 interface BalanceI {
     balance: number,
@@ -8,7 +10,7 @@ interface BalanceI {
     withdrawnBalance: number
 }
 
-export default function () {
+function _Balance() {
 
     const [balance, setBalance] = useState<BalanceI>({
         balance: 0,
@@ -38,6 +40,8 @@ export default function () {
             , body: JSON.stringify({ amount: amount })
         })
         let body = await res.json();
+        store.fetchUser();
+        fetchBalance();
         alert(body.message);
     }
 
@@ -73,3 +77,6 @@ export default function () {
         </div>
     )
 }
+
+const Balance = observer(_Balance)
+export default Balance

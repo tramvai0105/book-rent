@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Filter } from "./MainPage";
+import YandexCityAutocomplete, { Suggestion } from "../../ui/YandexCityAutocomplete";
 
 export default function SearchFilter({ setFilters }: { setFilters: (k: string, v: any) => void }) {
     
@@ -9,6 +10,7 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
     const [yearFrom, setYearFrom] = useState('');
     const [yearTo, setYearTo] = useState('');
     const [serviceType, setServiceType] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
 
     function clear(){
         setCity('');
@@ -23,13 +25,22 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
         setFilters("yearFrom", "");
         setFilters("yearTo", "");
         setFilters("serviceType", "");
+        if(inputRef.current){
+            inputRef.current.clear()
+        }
+    }
+
+    function setterForCity(sug: Suggestion){
+        setCity(sug.city);
+        setFilters("city", sug.city)
     }
 
     return (
         <form className="w-[320px] drop-shadow-lg rounded-md h-fit bg-main flex flex-col text-xl py-4 pb-8 gap-3 px-2">
             <div className="w-full gap-3 items-center flex flex-col">
                 <h1 className="text-2xl">Фильтры</h1>
-                <input
+                <YandexCityAutocomplete ref={inputRef} setter={setterForCity} placeholder="Город" className="w-[70%] pl-1 rounded-xl bg-white"/>
+                {/* <input
                     placeholder="Город"
                     className="w-[70%] pl-1 rounded-xl bg-white"
                     value={city}
@@ -38,7 +49,7 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
                         setCity(e.target.value);
                         setFilters(e.target.name, e.target.value); // Обновляем состояние
                     }}
-                />
+                /> */}
             </div>
             <div className="flex flex-col gap-2 w-full items-center">
                 <h2>Цена, ₽</h2>
@@ -118,6 +129,19 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
                             }}
                         />
                         Продажа
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="serviceType"
+                            value="both"
+                            checked={serviceType === 'both'}
+                            onChange={(e) => {
+                                setServiceType(e.target.value);
+                                setFilters(e.target.name, e.target.value); // Обновляем состояние
+                            }}
+                        />
+                        Оба способа
                     </label>
                 </div>
             </div>
