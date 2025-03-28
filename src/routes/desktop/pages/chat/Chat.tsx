@@ -141,7 +141,7 @@ function MessageItem({ data, avatar, own }: { data: ChatMessage, avatar: string,
     return (
         <div className="w-fit min-h-[35px] items-center gap-2 flex flex-row">
             <img className="w-[35px] h-[35px] rounded-full" src={`/${avatar}`} />
-            <div className={clsx({"bg-blue-100":own}, {"bg-blue-100":!own},"whitespace-pre px-4 h-full flex items-center rounded-full")}>{data.message}</div>
+            <div className={clsx({"bg-blue-100":own}, {"bg-white":!own},"whitespace-pre px-4 h-full flex items-center rounded-full")}>{data.message}</div>
         </div>
     )
 }
