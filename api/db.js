@@ -73,6 +73,9 @@ async function init() {
         await pool.query(`
             INSERT INTO users (email, password, name, role, verificated, balance)
             SELECT ?, ?, ?, ?, ?, ?
+            WHERE NOT EXISTS (
+                SELECT 1 FROM users WHERE email = ?
+            )
         `, [useremail, userpassword, username, userrole, userverificated, userbalance, useremail]);
 
         await pool.query(`CREATE TABLE IF NOT EXISTS transactions (
