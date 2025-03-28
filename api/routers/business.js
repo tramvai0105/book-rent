@@ -176,7 +176,7 @@ businessRouter.post('/rentBook', async (req, res) => {
             return res.status(400).json({ message: validationResult.format() });
         }
 
-        const [listing] = await db.query('SELECT * FROM listings WHERE id = ?', [listingId]);
+        const [listing] = await db.query('SELECT * FROM listings WHERE status="approved" AND id = ?', [listingId]);
         if (listing.length === 0) {
             return res.status(404).json({ message: 'Объявление не найдено' });
         }
@@ -336,7 +336,7 @@ businessRouter.post('/purchaseBook', async (req, res) => {
             return res.status(400).json({ message: validationResult.format() });
         }
 
-        const [listing] = await db.query('SELECT * FROM listings WHERE id = ?', [listingId]);
+        const [listing] = await db.query('SELECT * FROM listings WHERE status="approved" AND id = ?', [listingId]);
         if (listing.length === 0) {
             return res.status(404).json({ message: 'Объявление не найдено' });
         }

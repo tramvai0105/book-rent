@@ -3,6 +3,8 @@ import { socket } from "../../../../utils/socket"
 import { ChatMessage } from "../../../../utils/models";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import clsx from "clsx";
+import store from "../../../../utils/store";
+import { observer } from "mobx-react-lite";
 
 export interface ChatModel {
     id: number;
@@ -18,7 +20,7 @@ export interface ChatModel {
     updatedAt: Date;
 }
 
-export default function Chat() {
+function _Chat() {
 
     const [isConnected, setIsConnected] = useState(socket.connected);
     const [chats, setChats] = useState<ChatModel[]>([])
@@ -107,18 +109,18 @@ export default function Chat() {
                 <div className="h-full flex gap-2 flex-col w-3/4 p-2">
                     {chats.length > 0
                         ? <>
-                            <div className="flex flex-none flex-row justify-between">
-                                <div className="flex gap-2">
-                                    <span className="text-lg">Чат с </span>
+                            <div className="flex flex-none flex-row gap-2 justify-between">
+                                <div className="flex flex-row items-center gap-2">
+                                    <span className="text-lg text-center">Чат с </span>
                                     <span className="bg-lbrown px-4 text-xl rounded-md text-white w-fit ">{chats[currentChatId].otherUserName}</span>
                                 </div>
-                                <div className="flex gap-2">
-                                    <span className="text-lg">По объявлению </span>
+                                <div className="flex flex-row items-center gap-2">
+                                    <span className="text-lg text-center">По объявлению </span>
                                     <button className="bg-lbrown px-4 text-xl rounded-md text-white w-fit ">{chats[currentChatId].bookTitle}</button>
                                 </div>
                             </div>
                             <div ref={messagesRef} className="flex-grow overflow-y-auto flex flex-col gap-2">
-                                {chats[currentChatId].messages.map((m, i) => <MessageItem avatar={chats[currentChatId].otherUserAvatar} key={i} data={m} />)}
+                                {chats[currentChatId].messages.map((m, i) => <MessageItem own={store && store.getUserData() ? m.senderId == store.getUserData().id : false} avatar={chats[currentChatId].otherUserAvatar} key={i} data={m} />)}
                             </div>
                             <div className="flex flex-none flex-row gap-2">
                                 <textarea value={messageInputData} onChange={(e) => setMessageInputData(e.target.value)} className="w-full pl-1 pt-1 mt-auto h-[125px] resize-none bg-white rounded-md" />
@@ -132,11 +134,14 @@ export default function Chat() {
     )
 }
 
-function MessageItem({ data, avatar }: { data: ChatMessage, avatar: string }) {
+const Chat = observer(_Chat);
+export default Chat;
+
+function MessageItem({ data, avatar, own }: { data: ChatMessage, avatar: string, own: boolean }) {
     return (
         <div className="w-fit min-h-[35px] items-center gap-2 flex flex-row">
             <img className="w-[35px] h-[35px] rounded-full" src={`/${avatar}`} />
-            <div className="bg-white whitespace-pre px-4 h-full flex items-center rounded-full">{data.message}</div>
+            <div className={clsx({"bg-blue-100":own}, {"bg-blue-100":!own},"whitespace-pre px-4 h-full flex items-center rounded-full")}>{data.message}</div>
         </div>
     )
 }
