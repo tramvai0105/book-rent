@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 
 export default function NewListing() {
     const [formData, setFormData] = useState({
-        title: 'монстр Франкенштейна',
-        author: 'Мэри Шэлли',
-        publicationYear: '1818',
-        genre: 'Фантастика',
-        address: 'ул Пушкина, дом Колотушкина',
-        city: 'г. Краснодар',
-        phoneNumber: '89041231212',
-        description: 'Крутая книга',
-        wealth: 'Хорошее качество',
+        title: '',
+        author: '',
+        publicationYear: '',
+        genre: '',
+        address: '',
+        city: '',
+        phoneNumber: '',
+        description: '',
+        wealth: '',
         interactionType: 'rent',
-        rentPricePerMonth: '123',
-        deposit: '123',
-        salePrice: '123',
+        rentPricePerMonth: '',
+        deposit: '',
+        salePrice: '',
         photos: null,
     }); // Тестовая инит формдата
 

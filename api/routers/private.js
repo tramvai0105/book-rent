@@ -472,9 +472,9 @@ privateRouter.post('/createChat', async (req, res) => {
 
         const sellerId = listing.userId;
 
-        // if (userId === sellerId) {
-        //     return res.status(403).json({ message: 'Вы не можете создать этот чат.' });
-        // }
+        if (userId === sellerId) {
+            return res.status(403).json({ message: 'Вы не можете создать этот чат.' });
+        }
 
         const [existingChat] = await db.query(`
         SELECT * FROM Chats 
