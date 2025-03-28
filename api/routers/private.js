@@ -87,12 +87,32 @@ privateRouter.delete("/listings/remove/:id", async (req, res) => {
     try {
         // Проверяем, существует ли объявление и принадлежит ли оно пользователю
         const [rows] = await db.query(`
-            SELECT id FROM Listings 
+            SELECT id, status FROM Listings 
             WHERE id = ? AND userId = ?
         `, [listingId, userId]);
 
         if (rows.length === 0) {
             return res.status(404).json({ message: "Объявление не найдено или не принадлежит пользователю." });
+        }
+
+        const listing = rows[0];
+
+        // Проверяем статус объявления
+        if (listing.status === "closed" || listing.status === "process") {
+            return res.status(403).json({ message: "Нельзя удалить объявление со статусом 'closed' или 'process'." });
+        }
+
+        // Удаляем все сообщения из таблицы сhatmessages, связанные с чатом
+        const [chats] = await db.query(`
+            SELECT id FROM chats 
+            WHERE listingId = ?
+        `, [listingId]);
+
+        for (const chat of chats) {
+            await db.query(`
+                DELETE FROM сhatmessages 
+                WHERE chatId = ?
+            `, [chat.id]);
         }
 
         // Удаляем все записи из таблицы chats, связанные с данным listingId
