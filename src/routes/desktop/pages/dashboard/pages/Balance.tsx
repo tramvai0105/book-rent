@@ -30,7 +30,7 @@ export default function () {
         if (!amount) {
             return;
         }
-        let res = await fetch("/balance/add", {
+        let res = await fetch("api/private/balance/add", {
             method: "POST"
             , headers: { "Content-Type": "application/json" }
             , body: JSON.stringify({ amount: amount })
