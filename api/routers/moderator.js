@@ -56,7 +56,7 @@ moderatorRouter.get("/listings", async (req, res) => {
         const listingsData = rows.map(row => ({
             id: row.id,
             title: row.title,
-            img: row.img ? JSON.parse(row.img)[0] : '',
+            img: row.img ? JSON.parse(row.img) : '',
             description: row.description,
             wealth: row.wealth,
             author: row.author,

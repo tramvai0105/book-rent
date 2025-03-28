@@ -17,7 +17,7 @@ import http from 'http';
 import { Server } from "socket.io";
 import { fetchUserChats, onlyForHandshake } from './utils.js';
 import { config } from 'dotenv';
-config();
+config(); // Для env
 
 import { fileURLToPath } from 'url';
 import path from 'node:path';
@@ -40,14 +40,14 @@ export const app = express()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use('/files', express.static(path.join(__dirname, 'files')));
+app.use('/files', express.static(path.join(__dirname, 'files'))); // Для раздачи статики
 
 const dbSessionOptions = {
   host: process.env.VITE_DB_HOST,
   user: process.env.VITE_DB_USER,
   password: process.env.VITE_DB_PASSWORD,
   database: 'sessions'
-};
+}; // База данных сессии
 
 // Создание пула соединений
 const connection = mysql.createPool(dbSessionOptions);
@@ -132,7 +132,7 @@ const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173"
   }
-});
+}); // Сервер сокета
 
 server.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`)

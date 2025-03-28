@@ -54,7 +54,7 @@ privateRouter.get("/listings", async (req, res) => {
         const listingsData = rows.map(row => ({
             id: row.id,
             title: row.title,
-            img: row.img ? JSON.parse(row.img)[0] : '',
+            img: row.img ? JSON.parse(row.img) : '',
             description: row.description,
             wealth: row.wealth,
             author: row.author,
@@ -231,13 +231,14 @@ privateRouter.get('/balance', async (req, res) => {
     }
 });
 
+// ДЛЯ ТЕСТОВ ДОБАВЛЕНИЕ БАЛАНСА
 privateRouter.post('/balance/add', async (req, res) => {
     const userId = req.user.id; // Получаем ID пользователя из запроса
     let { amount } = req.body; // Получаем сумму из тела запроса
 
     amount = Number(amount)
-    if (isNaN(amount) && amount >= 0) {
-        return res.status(400).json({ message: 'Сумма должна быть положительным числом' });
+    if (isNaN(amount)) {
+        return res.status(400).json({ message: 'Сумма должна быть числом' });
     }
 
     try {
@@ -254,6 +255,31 @@ privateRouter.post('/balance/add', async (req, res) => {
     } catch (error) {
         console.error("Ошибка при пополнении баланса:", error);
         res.status(500).json({ message: 'Внутренняя ошибка сервера' });
+    }
+});
+
+// ДЛЯ ТЕСТОВ СМЕНА РОЛИ
+privateRouter.post('/changeRole', async (req, res) => {
+    const userId = req.user.id; // Получаем ID пользователя из токена или сессии
+
+    try {
+        // Получаем текущую роль пользователя
+        const [user] = await db.query('SELECT role FROM users WHERE id = ?', [userId]);
+
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+
+        // Меняем роль на противоположную
+        const newRole = user[0].role === 'user' ? 'moderator' : 'user';
+
+        // Обновляем роль в базе данных
+        await db.query('UPDATE users SET role = ? WHERE id = ?', [newRole, userId]);
+
+        res.status(200).json({ message: `Роль успешно изменена на ${newRole}` });
+    } catch (error) {
+        console.error('Ошибка при изменении роли:', error);
+        res.status(500).json({ message: 'Произошла ошибка при изменении роли' });
     }
 });
 

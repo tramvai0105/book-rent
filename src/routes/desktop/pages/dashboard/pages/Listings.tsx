@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import book from "../../../../../assets/book.jpg"
 import React, { useEffect, useState } from "react"
 import { ListingData } from "../../../../../utils/dataModels"
+import BookImages from "../../../ui/BookImages"
 
 export default function Listings() {
     const navigate = useNavigate()
@@ -59,7 +60,7 @@ function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
         <div className="px-4 py-6 flex border-[1px] border-dark rounded-2xl flex-row gap-4">
             <div className="w-2/5 flex flex-col gap-2">
                 <h1 className="text-2xl font-bold">{listing.title}</h1>
-                <img className="w-full rounded-lg h-[240px] object-cover" src={`/${listing.img}`} />
+                <BookImages style="w-full rounded-lg h-[240px] object-cover" images={listing.img}/>
                 <div className="text-lg">
                     <h2 className="text-xl mb-2 font-semibold">Характеристики</h2>
                     <ul className="list-disc list-inside">

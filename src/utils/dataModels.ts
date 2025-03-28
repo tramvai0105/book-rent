@@ -11,7 +11,7 @@ export interface BookCardData extends BookFields, ListingFields {
 export interface BookData {
     id: number,
     title: string,
-    img: string,
+    img: string[],
     sellerName: string,
     interactionType: 'rent' | 'sale' | 'both';
     phoneNumber: string,
@@ -28,7 +28,7 @@ export interface BookData {
 export interface ListingData {
     id: number;
     title: string,
-    img: string,
+    img: string[],
     userId: string,
     sellerName: string,
     description: string,

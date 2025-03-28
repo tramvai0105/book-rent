@@ -41,6 +41,14 @@ export default function () {
         alert(body.message);
     }
 
+    async function changeRole() {
+        let res = await fetch("/api/private/changeRole", {
+            method: "POST"
+        })
+        let body = await res.json();
+        alert(body.message);
+    }
+
     return (
         <div className='flex flex-col text-xl w-fit rounded-2xl gap-6 px-6 py-12 border-dark border-[1px]'>
             <div className='text-2xl font-bold'>Баланс</div>
@@ -58,10 +66,10 @@ export default function () {
             </div>
             <div className='flex flex-row gap-4'>
                 <button onClick={addBalance} className='cursor-pointer border-[1px] border-dark px-6 py-1 rounded-md bg-lbrown hover:bg-brown hover:text-white'>Пополнить баланс</button>
-                <button className='cursor-pointer border-[1px] border-dark px-6 py-1 rounded-md bg-lbrown hover:bg-brown hover:text-white'>Вывести баланс</button>
+                <button onClick={changeRole} className='cursor-pointer border-[1px] border-dark px-6 py-1 rounded-md bg-lbrown hover:bg-brown hover:text-white'>Вывести баланс</button>
             </div>
             {/* Тесты */}
-            <YandexCityAutocomplete/>
+            {/* <YandexCityAutocomplete/> */}
         </div>
     )
 }

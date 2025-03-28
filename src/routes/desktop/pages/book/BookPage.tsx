@@ -4,6 +4,7 @@ import book from "../../../../assets/book.jpg";
 import { BookData } from '../../../../utils/dataModels';
 import store from '../../../../utils/store';
 import OpenChat from '../../ui/OpenChat';
+import BookImages from '../../ui/BookImages';
 
 export default function BookPage() {
     const { id } = useParams();
@@ -74,7 +75,7 @@ export default function BookPage() {
             </div>
             <div className="flex">
                 <div className="lg:w-2/5 w-1/2 rounded-lg flex items-center justify-center">
-                    <img alt="Фотография" className="w-full h-[420px] rounded-lg object-cover" height="150" src={`/${bookData.img}`} width="150" />
+                    <BookImages style='w-full h-[420px] rounded-lg object-cover' images={bookData.img}/>
                 </div>
                 <div className="lg:w-3/5 w-1/2 pl-4">
                     <div className="mb-4 text-xl">

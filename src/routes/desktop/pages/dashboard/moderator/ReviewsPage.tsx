@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import book from "../../../../../assets/book.jpg"
 import { ListingData } from '../../../../../utils/dataModels'
 import { useNavigate } from 'react-router-dom'
+import BookImages from '../../../ui/BookImages'
 
 export default function ReviewsPage() {
 
@@ -69,7 +70,7 @@ function Review({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
             </div>
             <div className="flex">
                 <div className="w-1/3 rounded-lg flex items-center justify-center">
-                    <img alt="Фотография" className="w-[420px] h-[420px] rounded-lg object-cover" height="150" src={`/${listing.img}`} width="150" />
+                    <BookImages style='w-[420px] h-[420px] rounded-lg object-cover' images={listing.img}/>
                 </div>
                 <div className="w-2/3 pl-4">
                     <div className="mb-4 text-xl">

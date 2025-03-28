@@ -125,7 +125,7 @@ publicRouter.get("/listings/:id", async (req, res) => {
                 publicationYear: row.publicationYear,
                 interactionType: row.interactionType,
                 genre: row.genre,
-                img: JSON.parse(row.img)[0] || '',
+                img: JSON.parse(row.img) || '',
                 city: row.city,
                 address: row.address,
                 sellerName: row.sellerName,

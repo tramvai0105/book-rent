@@ -17,7 +17,7 @@ export default function NewListing() {
         deposit: '123',
         salePrice: '123',
         photos: null,
-    });
+    }); // Тестовая инит формдата
 
     const [previewImages, setPreviewImages] = useState([]);
     const navigate = useNavigate()
@@ -29,7 +29,7 @@ export default function NewListing() {
                 ...formData,
                 photos: files,
             });
-
+            /// Для отображения превью изображений
             const imagesArray = Array.from(files).map(file => URL.createObjectURL(file));
             setPreviewImages(imagesArray);
         } else {
