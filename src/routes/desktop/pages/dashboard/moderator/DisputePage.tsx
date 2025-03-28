@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { DisputeData } from './DisputesPage';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import store from '../../../../../utils/store';
 
 interface ChatMessageI {
@@ -17,6 +17,7 @@ export default function DisputePage() {
     const [dispute, setDispute] = useState<DisputeData | null>(null)
     const [messages, setMessages] = useState<ChatMessageI[]>([])
     const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchDispute();
@@ -79,6 +80,7 @@ export default function DisputePage() {
         let body = await res.json();
         alert(body.message);
         store.fetchUser()
+        navigate("/dashboard/mod")
     }
 
     if (dispute == null) {

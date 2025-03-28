@@ -53,6 +53,7 @@ function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
         }
         let res = await fetch(`/api/private/listings/remove/${listing.id}`, {method: "DELETE"})
         let body = await res.json()
+        alert(body.message);
         refetch()
     }
 

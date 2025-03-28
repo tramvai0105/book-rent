@@ -161,7 +161,6 @@ function HistorySellSale({ data }: { data: Sale }) {
                     <span className="font-medium">Покупатель</span>
                     <div className="flex flex-row">
                         <span>{data.buyerName}</span>
-                        <button>Chat</button>
                     </div>
                 </div>
                 <div className="flex flex-row gap-6">

@@ -520,11 +520,6 @@ businessRouter.post("/confirmExtend", async (req, res) => {
             return res.status(400).json({ message: "Запрос на продление не найден." });
         }
 
-        // Проверяем, является ли текущий пользователь арендатором
-        if (rental[0].renterId !== userId) {
-            return res.status(403).json({ message: "Вы не имеете права подтверждать продление этой аренды." });
-        }
-
         const listingId = rental[0].listingId; // Получаем ID листинга из аренды
 
         // Получаем информацию о листинге, чтобы получить цену аренды и ID владельца
@@ -532,6 +527,11 @@ businessRouter.post("/confirmExtend", async (req, res) => {
             SELECT userId, rentPricePerMonth FROM Listings 
             WHERE id = ?
         `, [listingId]);
+
+        // Проверяем, является ли текущий пользователь арендатором
+        if (listing[0].userId !== userId) {
+            return res.status(403).json({ message: "Вы не имеете права подтверждать продление этой аренды." });
+        }
 
         if (listing.length === 0) {
             return res.status(404).json({ message: "Листинг не найден." });

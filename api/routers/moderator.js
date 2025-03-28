@@ -248,7 +248,7 @@ moderatorRouter.get("/chat/:chatId", async (req, res) => {
                 cm.receiverId,
                 cm.message,
                 cm.createdAt
-            FROM ChatMessages cm
+            FROM сhatmessages cm
             WHERE cm.chatId = ?
             ORDER BY cm.createdAt ASC
         `, [chatId]);
@@ -359,7 +359,7 @@ moderatorRouter.post('/transferDepositToSeller', async (req, res) => {
         }
 
         // Проверяем, существует ли диспут
-        const [dispute] = await db.query('SELECT * FROM Disputes WHERE id = ?', [disputeId]);
+        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" id = ?', [disputeId]);
         if (dispute.length === 0) {
             return res.status(404).json({ message: 'Диспут не найден' });
         }
@@ -418,7 +418,7 @@ moderatorRouter.post('/returnDepositToRenter', async (req, res) => {
             return res.status(400).json({ message: validationResult.format() });
         }
 
-        const [dispute] = await db.query('SELECT * FROM Disputes WHERE id = ?', [disputeId]);
+        const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" id = ?', [disputeId]);
         if (dispute.length === 0) {
             return res.status(404).json({ message: 'Диспут не найден' });
         }

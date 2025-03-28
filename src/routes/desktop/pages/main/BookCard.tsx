@@ -11,7 +11,7 @@ export default function BookCard({card}:{card: BookCardData}) {
     //     </div>)
     // }
 
-    return (<div onClick={()=>navigate(`/book/${card.id}`)} className="w-full p-3 cursor-pointer border-[1px] border-bright hover:border-main gap-1 text-lg flex items-center flex-col rounded-md drop-shadow-lg h-[400px] bg-bright">
+    return (<div onClick={()=>navigate(`/book/${card.id}`)} className="w-full p-3 cursor-pointer border-[1px] border-bright hover:border-main gap-1 text-lg flex items-center flex-col rounded-md drop-shadow-lg h-[440px] bg-bright">
         <img className="w-[280px] rounded-md h-[235px] max-h-[235px] object-cover" src={`${card.img}`} />
         <div className="text-lbrown font-medium text-xl text-center mt-1">{card.author} - {card.title}</div>
         <div className="flex flex-row gap-2 justify-center text-sm">
