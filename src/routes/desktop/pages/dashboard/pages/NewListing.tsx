@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 export default function NewListing() {
     const [formData, setFormData] = useState({
-        title: 'Франкенштейн',
+        title: 'монстр Франкенштейна',
         author: 'Мэри Шэлли',
-        publicationYear: '1900',
+        publicationYear: '1818',
         genre: 'Фантастика',
-        address: 'г. Краснодар',
+        address: 'ул Пушкина, дом Колотушкина',
+        city: 'г. Краснодар',
         phoneNumber: '89041231212',
         description: 'Крутая книга',
         wealth: 'Хорошее качество',
@@ -115,6 +116,15 @@ export default function NewListing() {
                 className='w-full pl-2 h-[45px] bg-main rounded-md'
                 required
             />
+            <h2 className='text-xl font-bold text-lbrown'>Город</h2>
+            <input
+                name='city'
+                value={formData.city}
+                onChange={handleChange}
+                placeholder='Введите город...'
+                className='w-full pl-2 h-[45px] bg-main rounded-md'
+                required
+            />
             <h2 className='text-xl font-bold text-lbrown'>Ваш номер телефона</h2>
             <input
                 name='phoneNumber'
@@ -210,6 +220,16 @@ export default function NewListing() {
                         />
                     </div>
                 </div>
+                <label className='w-1/3 flex flex-row items-center gap-4 text-xl font-bold text-lbrown'>
+                    <input
+                        type="radio"
+                        name="interactionType"
+                        value="both"
+                        checked={formData.interactionType === 'both'}
+                        onChange={handleChange}
+                    />
+                    Оба способа
+                </label>
             </div>
             <button type="submit" className='mt-4 cursor-pointer bg-lbrown text-white rounded-md p-2'>Добавить книгу</button>
         </form>

@@ -8,16 +8,18 @@ import transporter from '../mail.js';
 import schemaInspector from 'schema-inspector';
 config();
 
-authRouter.get('/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] }))
+/// ДЛЯ OAuTH Google
+// authRouter.get('/google',
+//     passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 
-authRouter.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/' }),
-    function (req, res) {
-        res.redirect('/');
-    });
+// authRouter.get('/google/callback',
+//     passport.authenticate('google', { failureRedirect: '/' }),
+//     function (req, res) {
+//         res.redirect('/');
+//     });
 
+// Выход из системы
 authRouter.post("/logout", (req, res, next) => {
     req.logout((err) => {
         if (err) {
@@ -38,6 +40,7 @@ const registrationSchema = {
     required: ['email', 'password', 'contactInfo', 'city'], // Все поля обязательны
 };
 
+// Регистрация
 authRouter.post('/register', async (req, res) => {
     const { email, password, contactInfo, city } = req.body;
 
@@ -59,6 +62,7 @@ authRouter.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Пользователь с таким именем уже существует' });
         }
 
+        // Хэшируем пароль
         const hash = await bcrypt.hash(password, 10);
         
         const now = new Date();
@@ -68,12 +72,13 @@ authRouter.post('/register', async (req, res) => {
             [email, hash, false, email, city, "avatarDefault.jpg", contactInfo, "", "user", now, now]
         );
 
+        // Код верификации
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         await db.query('INSERT INTO verifications (email, code) VALUES (?, ?)', [email, verificationCode]);
 
         const mailOptions = {
-            from: transporter.options.sender,
+            from: transporter.options.sender, // Sender указываеся в инициализации транспортера
             to: email,
             subject: 'Подтверждение регистрации',
             text: `Ваш код подтверждения: ${verificationCode}`
@@ -112,7 +117,7 @@ authRouter.post('/retriveSend', async (req, res) => {
     await db.query('UPDATE users SET recovery_code = ? WHERE email = ?', [recoveryCode, email]);
 
     const mailOptions = {
-        from: transporter.options.sender,
+        from: transporter.options.sender,  // Sender указываеся в инициализации транспортера
         to: email,
         subject: 'Код восстановления',
         text: `Ваш код восстановления: ${recoveryCode}`
@@ -184,6 +189,8 @@ authRouter.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+
+// Служебный метод для запроса информации профиля
 authRouter.get('/me', (req, res) => {
     if (req.isAuthenticated()) {
         res.json({ user: req.user });

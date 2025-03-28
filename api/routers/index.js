@@ -4,6 +4,8 @@ import privateRouter from './private.js';
 import moderatorRouter from './moderator.js';
 const apiRouter = express.Router()
 
+
+// Добавляем роутеры на /api
 apiRouter.use("/public", publicRouter);
 apiRouter.use("/private", privateRouter);
 apiRouter.use("/m/", moderatorRouter);

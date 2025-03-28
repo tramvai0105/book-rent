@@ -3,6 +3,7 @@ import mailgunTransport from "nodemailer-mailgun-transport";
 import { config } from 'dotenv';
 config();
 
+// Для использование через почту гугл и пароль от двойной аутентификации
 // function init(){
 //     try{
 //     const transporter = nodemailer.createTransport({
@@ -18,6 +19,7 @@ config();
 //     }
 // }
 
+// Решение на сервер через mailgun
 const mailgunAuth = {
   auth: {
     api_key: process.env.VITE_MAILGUN_API,

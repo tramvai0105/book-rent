@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 config();
 
 async function init() {
+    // Подключаемся через данные из .env
     const pool = mysql.createPool({
         host: process.env.VITE_DB_HOST,
         user: process.env.VITE_DB_USER,
@@ -18,6 +19,8 @@ async function init() {
         keepAliveInitialDelay: 0,
     });
 
+    // Далее создаем все таблицы 
+    //(БАЗЫ ДАННЫХ books и sessons не создаются и должны быть созданы перед стартом сервера)
     try {
         await pool.query(`
         CREATE TABLE IF NOT EXISTS users(
@@ -40,6 +43,9 @@ async function init() {
         );
         `);
 
+        // Наш главный модератор. Ему поступает комиссия. 
+        // Создается автоматически в пустую базу данных с id = 1
+        // Возможно придется поменять на какую-то другую реализацию главного модератора
         const email = 'admin@gmail.com';
         const _password = process.env.VITE_ADMIN_PASSWORD
         const password = await bcrypt.hash(_password, 10);

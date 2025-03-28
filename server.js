@@ -167,7 +167,7 @@ io.on('connection', async (socket) => {
       const receiverId = chat[0].sellerId === user.id ? chat[0].buyerId : chat[0].sellerId;
 
       const result = await db.query(`
-        INSERT INTO ChatMessages (senderId, receiverId, chatId, message)
+        INSERT INTO сhatmessages (senderId, receiverId, chatId, message)
         VALUES (?, ?, ?, ?)`,
         [user.id, receiverId, chatId, message]
       );

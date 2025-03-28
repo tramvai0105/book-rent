@@ -1,3 +1,5 @@
+/// МАКЕТ ШАБЛОНА. НЕ РЕАЛИЗУЕТСЯ
+
 import express from 'express'
 const booksRouter = express.Router()
 import { config } from 'dotenv';

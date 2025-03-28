@@ -1,3 +1,5 @@
+/// МАКЕТ ШАБЛОНА. НЕ РЕАЛИЗУЕТСЯ
+
 import multer from '../multerConfig.js';
 const upload = multer({
     storage: storage,

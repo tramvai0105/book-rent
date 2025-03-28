@@ -4,6 +4,7 @@ import passport from 'passport'
 import bcrypt from "bcryptjs"
 import db from '../../db.js';
 
+// Авторизует пользователя но сохранение в базе данных не реализовано
 // passport.use(new GoogleStrategy({
 //     clientID: process.env.VITE_AUTH_GOOGLE_ID,
 //     clientSecret: process.env.VITE_AUTH_GOOGLE_SECRET,
@@ -15,6 +16,7 @@ import db from '../../db.js';
 //     }
 // ));
 
+// Для регистрации по email\пароль
 passport.use(new LocalStrategy(
     async (username, password, done) => {
         try {
@@ -36,14 +38,17 @@ passport.use(new LocalStrategy(
     }
 ));
 
+// Внутрений метод паспорта складывает id пользователя в сессию
 passport.serializeUser ((user, done) => {
     done(null, user.id);
 });
 
+// Внутрений метод паспорта извлекаем пользователя по id и исползуе дальше во всех методах через req.user
 passport.deserializeUser (async (id, done) => {
     try {
         const results = await db.query('SELECT * FROM users WHERE id = ?', [id]);
         let user = results[0][0]
+        // Удаляем хэшированый пароль
         delete user.password
         done(null, user);
     } catch (err) {

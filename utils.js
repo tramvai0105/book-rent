@@ -9,7 +9,7 @@ export async function fetchUserChats(userId) {
 
         const chatMessagesPromises = chats.map(async (chat) => {
             const [messages] = await db.query(`
-                SELECT * FROM ChatMessages
+                SELECT * FROM сhatmessages
                 WHERE chatId = ?
             `, [chat.id]);
 

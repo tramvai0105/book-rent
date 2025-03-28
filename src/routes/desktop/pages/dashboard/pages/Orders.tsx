@@ -282,7 +282,7 @@ function OrderSellRent({ data, rf }: { data: RentalAsLessor, rf: () => Promise<v
                     <h2 className="font-bold">{data.price}</h2>
                     <h2>{data.address}</h2>
                 </div>
-                <div className="flex flex-col gap-3 w-2/4">
+                <div className="flex flex-col justify-center gap-3 w-2/4">
                     <div className="flex flex-row gap-6">
                         <span className="font-medium">Арендатор</span>
                         <div className="flex flex-row items-center gap-2">

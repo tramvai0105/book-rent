@@ -37,7 +37,6 @@ export default function Chat() {
     }
 
     function onNewMessage(msg: ChatMessage) {
-        console.log(msg)
         setChats((prev) => {
             prev = prev.map((c) => { if (c.id == msg.chatId) { return { ...c, messages: [...c.messages, msg] } } else return c })
             return prev;
@@ -51,6 +50,8 @@ export default function Chat() {
     },[chats])
 
     useEffect(() => {
+        // Если создаем новый чат нас переносит на страницу чата с параметром поиска
+        // Тут открываем свежесозданный чат
         const id = searchParams.get('id');
         if (id && !isNaN(Number(id))) {
             const queriedChat = chats.find(chat => chat.listingId === Number(id));

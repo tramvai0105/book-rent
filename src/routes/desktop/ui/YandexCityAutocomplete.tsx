@@ -1,26 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function YandexCityAutocomplete(){
+interface Suggestion {
+    street: string,
+    city: string,
+}
+
+function YandexCityAutocomplete({setter}:{setter: (suggestion: Suggestion)=>void}) {
     const [inputValue, setInputValue] = useState('');
-    const [suggestions, setSuggestions] = useState([]);
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
 
     const handleChange = async (event) => {
         const value = event.target.value;
         setInputValue(value);
 
-        if (value.length > 2) {
-            const res = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${import.meta.env.VITE_YANDEX_API_KEY}&geocode=${value}&format=json`);
-            const data = await res.json();
-            const features = data?.response?.GeoObjectCollection?.featureMember || [];
-            const newSuggestions = features.map(feature => feature.GeoObject.name);
-            setSuggestions(newSuggestions);
-        } else {
-            setSuggestions([]);
+        try {
+            if (value.length > 2) {
+                const res = await fetch(`https://suggest-maps.yandex.ru/v1/suggest?apikey=${import.meta.env.VITE_YANDEX_API_KEY}&text=${value}&results=3`);
+                const data = await res.json();
+                // const features = data?.response?.GeoObjectCollection?.featureMember || [];
+                console.log(data.results)
+                const newSuggestions = data.results.map(result => { return { street: result.title.text, city: result.subtitle.text } });
+                setSuggestions(newSuggestions);
+            } else {
+                setSuggestions([]);
+            }
+        } catch (err) {
+            console.error(err);
         }
     };
 
+    useEffect(()=>{
+        if(selectedSuggestion){
+            setter(selectedSuggestion)
+        }
+    },[selectedSuggestion])
+
     const handleSelect = (suggestion) => {
-        setInputValue(suggestion);
+        setSelectedSuggestion(suggestion);
+        console.log(suggestion)
+        setInputValue(suggestion.city + ", " + suggestion.street);
         setSuggestions([]);
     };
 
@@ -30,15 +49,19 @@ function YandexCityAutocomplete(){
                 type="text"
                 value={inputValue}
                 onChange={handleChange}
+                className='border-[1px] border-dark rounded-md pl-1 w-full'
                 placeholder="Введите город"
+                list="address"
             />
-            <div>
+            <datalist id="address">
                 {suggestions.map((suggestion, index) => (
-                    <div key={index} onClick={() => handleSelect(suggestion)}>
-                        {suggestion}
-                    </div>
+                    <option
+                        key={index}
+                        onClick={() => handleSelect(suggestion)}
+                        value={suggestion.city + ", " + suggestion.street}>
+                    </option>
                 ))}
-            </div>
+            </datalist>
         </div>
     );
 };

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
+import YandexCityAutocomplete from '../../../ui/YandexCityAutocomplete';
 
 interface BalanceI {
     balance: number,
@@ -25,18 +26,19 @@ export default function () {
         setBalance(body);
     }
 
+    // Функция пополнения баланса для тестов
     async function addBalance() {
         let amount = prompt("Введите количество для пополнения");
         if (!amount) {
             return;
         }
-        let res = await fetch("api/private/balance/add", {
+        let res = await fetch("/api/private/balance/add", {
             method: "POST"
             , headers: { "Content-Type": "application/json" }
             , body: JSON.stringify({ amount: amount })
         })
         let body = await res.json();
-        alert(body);
+        alert(body.message);
     }
 
     return (
@@ -58,6 +60,8 @@ export default function () {
                 <button onClick={addBalance} className='cursor-pointer border-[1px] border-dark px-6 py-1 rounded-md bg-lbrown hover:bg-brown hover:text-white'>Пополнить баланс</button>
                 <button className='cursor-pointer border-[1px] border-dark px-6 py-1 rounded-md bg-lbrown hover:bg-brown hover:text-white'>Вывести баланс</button>
             </div>
+            {/* Тесты */}
+            <YandexCityAutocomplete/>
         </div>
     )
 }

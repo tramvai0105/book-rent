@@ -236,7 +236,7 @@ privateRouter.post('/balance/add', async (req, res) => {
     let { amount } = req.body; // Получаем сумму из тела запроса
 
     amount = Number(amount)
-    if (!isNaN(amount) && amount >= 0) {
+    if (isNaN(amount) && amount >= 0) {
         return res.status(400).json({ message: 'Сумма должна быть положительным числом' });
     }
 

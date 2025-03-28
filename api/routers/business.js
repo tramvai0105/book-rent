@@ -5,6 +5,7 @@ import db from '../db.js';
 import schemaInspector from 'schema-inspector';
 import { isAuthenticatedAndVerified } from '../middleware.js';
 import multer from "multer";
+// Складываем всё в папку files. Имя генерируем от даты
 const storage = multer.diskStorage({
     destination: "files/",
     filename: function (req, file, callback) {
@@ -14,6 +15,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 config();
 
+// Малвейр(вся бизнес логика для авторизованных и подтвержденных пользователей)
 businessRouter.use(isAuthenticatedAndVerified);
 
 // Схема для добавления книги
@@ -39,7 +41,7 @@ const bookSchema = {
 
 businessRouter.post('/addBook', upload.array('photos'), async (req, res) => {
     try {
-        const { title, author, publicationYear, genre, wealth, address, phoneNumber, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
+        const { title, author, publicationYear, genre, wealth, city, address, phoneNumber, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
 
         const validationResult = schemaInspector.validate(bookSchema, req.body);
         if (!validationResult.valid) {
@@ -75,7 +77,7 @@ businessRouter.post('/addBook', upload.array('photos'), async (req, res) => {
             deposit,
             phoneNumber,
             address,
-            city: req.user.city,
+            city,
             deliveryMethod: 'meetup',
             status: 'pending',
             createdAt: new Date(),
@@ -179,6 +181,11 @@ businessRouter.post('/rentBook', async (req, res) => {
             return res.status(404).json({ message: 'Объявление не найдено' });
         }
 
+        // Проверяем, является ли текущий пользователь владельцем объявления
+        if (listing[0].userId === req.user.id) {
+            return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
+        }
+
         // Получаем информацию о пользователе
         const [user] = await db.query('SELECT balance FROM users WHERE id = ?', [req.user.id]);
         if (user.length === 0) {
@@ -265,7 +272,7 @@ businessRouter.post('/confirmRental', async (req, res) => {
         await db.query('UPDATE users SET frozenBalance = frozenBalance - ? WHERE id = ?', [rentPrice, rental[0].renterId]);
         // Обновляем баланс владельца
         await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [rentPrice - commission, ownerId]);
-        // Обновляем баланс модератора (пользователь с id 0)
+        // Обновляем баланс модератора (пользователь с id 1)
         await db.query('UPDATE users SET balance = balance + ? WHERE id = 1', [commission]);
 
         const deposit = {
@@ -335,9 +342,9 @@ businessRouter.post('/purchaseBook', async (req, res) => {
         }
 
         // Проверяем, является ли текущий пользователь владельцем объявления
-        // if (listing[0].userId === req.user.id) {
-        //     return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
-        // }
+        if (listing[0].userId === req.user.id) {
+            return res.status(403).json({ message: 'Вы не можете арендовать или купить свою собственную книгу' });
+        }
 
         // Получаем информацию о пользователе
         const [user] = await db.query('SELECT balance FROM users WHERE id = ?', [req.user.id]);
@@ -528,7 +535,7 @@ businessRouter.post("/confirmExtend", async (req, res) => {
         }
 
         const rentPrice = listing[0].rentPricePerMonth;
-        const ownerId = rental[0].listingId;
+        const ownerId = listing[0].userId;
 
         // Списываем сумму аренды с замороженного баланса арендатора
         await db.query('UPDATE users SET balance = balance - ? WHERE id = ?', [rentPrice, userId]);
@@ -749,9 +756,10 @@ businessRouter.post('/createDispute', upload.array('photos'), async (req, res) =
         if (userId !== sellerId) {
             return res.status(403).json({ message: 'Доступ запрещен: вы не являетесь арендодателем этого объявления' });
         }
-        console.log(sellerId, renterId)
+
         let [chatId] = await db.query(`SELECT id FROM Chats WHERE (sellerId = ? AND buyerId = ?) AND listingId = ?`, [sellerId, renterId, listingId]);
-        console.log(chatId);
+
+        // Если пользователи не общались создаем для них чат
         if (chatId.length === 0) {
             const [result] = await db.query('INSERT INTO Chats (sellerId, buyerId, listingId) VALUES (?, ?, ?)', [sellerId, renterId, listingId]);
             chatId = result.insertId;
