@@ -6,7 +6,7 @@ export interface Suggestion {
 }
 
 // Такой вот Апи-голЕм
-function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true, ref}:{setter: (suggestion: Suggestion)=>void, ref: React.RefObject<HTMLInputElement | null>, className?: string, placeholder?: string, cityOnly?: boolean}) {
+function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true, ref}:{setter: (value: string)=>void, ref: React.RefObject<HTMLInputElement | null>, className?: string, placeholder?: string, cityOnly?: boolean}) {
     const [inputValue, setInputValue] = useState('');
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
@@ -22,7 +22,7 @@ function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true
     const handleChange = async (event) => {
         const value = event.target.value;
         setInputValue(value);
-
+        setter(value)
         try {
             if (value.length > 2) {
                 const res = await fetch(`https://suggest-maps.yandex.ru/v1/suggest?apikey=${import.meta.env.VITE_YANDEX_API_KEY}&text=${value}&results=3&types=${cityOnly ? "locality" : "geo"}`);
@@ -39,19 +39,14 @@ function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true
         }
     };
 
-    useEffect(()=>{
-        if(selectedSuggestion){
-            setter(selectedSuggestion)
-        }
-    },[selectedSuggestion])
-
     const handleSelect = (suggestion) => {
         setSelectedSuggestion(suggestion);
-        console.log(suggestion)
         if(cityOnly){
             setInputValue(suggestion.city);
+            setter(suggestion.city)
         }else{
             setInputValue(suggestion.city + ", " + suggestion.street);
+            setter(suggestion.city + ", " + suggestion.street);
         }
         
         setSuggestions([]);

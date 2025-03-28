@@ -30,16 +30,17 @@ export default function SearchFilter({ setFilters }: { setFilters: (k: string, v
         }
     }
 
-    function setterForCity(sug: Suggestion){
-        setCity(sug.city);
-        setFilters("city", sug.city)
+    function setterForCity(value: string){
+        console.log(value)
+        setCity(value);
+        setFilters("city", value)
     }
 
     return (
         <form className="w-[320px] drop-shadow-lg rounded-md h-fit bg-main flex flex-col text-xl py-4 pb-8 gap-3 px-2">
             <div className="w-full gap-3 items-center flex flex-col">
                 <h1 className="text-2xl">Фильтры</h1>
-                <YandexCityAutocomplete ref={inputRef} setter={setterForCity} placeholder="Город" className="w-[70%] pl-1 rounded-xl bg-white"/>
+                <YandexCityAutocomplete ref={inputRef} setter={setterForCity} placeholder="Город" className="w-full pl-2 rounded-xl bg-white"/>
                 {/* <input
                     placeholder="Город"
                     className="w-[70%] pl-1 rounded-xl bg-white"

@@ -66,7 +66,8 @@ export default function MainPage() {
         return bookCards.filter(card => {
             card.salePrice = Number(card.salePrice);
             card.rentPricePerMonth = Number(card.rentPricePerMonth);
-            const matchesCity = filter.city ? card.city.toLowerCase().includes(filter.city.toLowerCase()) : true;
+            const matchesCity = filter.city ? card.city.toLowerCase().includes(filter.city.toLowerCase()) || filter.city.toLowerCase().includes(card.city.toLowerCase()) : true;
+            console.log(matchesCity)
             const matchesYearFrom = filter.yearFrom ? card.publicationYear >= Number(filter.yearFrom) : true;
             const matchesYearTo = filter.yearTo ? card.publicationYear <= Number(filter.yearTo) : true;
             const matchesServiceType = filter.serviceType ? (card.interactionType === filter.serviceType || card.interactionType === "both") : true;
