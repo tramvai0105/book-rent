@@ -9,7 +9,7 @@
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "preview": "cross-env NODE_ENV=production node server.js",
-    "serverProd": "NODE_ENV=production pm2 start server.js --watch",
+    "serverProd": "cross-env NODE_ENV=production forever start -c 'node' server.js --watch",
     "vercel-build": "npm run build"
   },
   "dependencies": {
