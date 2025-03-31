@@ -96,6 +96,7 @@ app.use("/api/", apiRouter);
 // Serve HTML
 app.use('*all', async (req, res) => {
   try {
+    // Получаем информацию о пользователе
     const url = req.originalUrl.replace(base, '')
     const userAgent = req.headers['user-agent'];
     const deviceType = userAgent.isMobile ? 'Mobile' : userAgent.isTablet ? 'Mobile' : 'Desktop';

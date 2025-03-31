@@ -2,9 +2,9 @@ import express from 'express'
 const privateRouter = express.Router()
 import { config } from 'dotenv';
 import db from '../db.js';
-import schemaInspector from 'schema-inspector';
 import { isAuthenticatedAndVerified, isModerator } from '../middleware.js';
 import multer from "multer";
+import Joi from "joi"
 const storage = multer.diskStorage({
     destination: "files/",
     filename: function (req, file, callback) {
@@ -426,21 +426,25 @@ privateRouter.post('/changeAvatar', upload.single('avatar'), async (req, res) =>
     }
 });
 
-const changeNameSchema = {
-    type: 'object',
-    properties: {
-        newName: { type: 'string', minLength: 1 },
-    },
-    required: ['newName'],
-};
+const changeNameSchema = Joi.object({
+    newName: Joi.string()
+        .min(1)
+        .required()
+        .messages({
+            'string.base': 'Имя должно быть строкой',
+            'string.min': 'Имя не может быть пустым',
+            'any.required': 'Имя обязательно'
+        }),
+});
 
 privateRouter.post('/changeName', async (req, res) => {
     const userId = req.user.id;
     const { newName } = req.body;
 
-    const validationResult = schemaInspector.validate(changeNameSchema, req.body);
-    if (!validationResult.valid) {
-        return res.status(400).json({ message: validationResult.format() });
+    // Валидация данных
+    const { error } = changeNameSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
     }
 
     try {

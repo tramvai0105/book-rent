@@ -2,7 +2,6 @@ import express from 'express'
 const moderatorRouter = express.Router()
 import { config } from 'dotenv';
 import db from '../db.js';
-import schemaInspector from 'schema-inspector';
 import { isAuthenticatedAndVerified, isModerator } from '../middleware.js';
 import multer from "multer";
 const storage = multer.diskStorage({
@@ -341,24 +340,10 @@ moderatorRouter.put("/reject/:id", async (req, res) => {
     }
 });
 
-const disputeIdSchema = {
-    disputeId: {
-        type: 'number',
-        min: 1,        
-        required: true,
-    }
-};
-
 moderatorRouter.post('/transferDepositToSeller', async (req, res) => {
     try {
         const { disputeId } = req.body;
-
-        // Валидация входных данных
-        const validationResult = schemaInspector.validate(disputeIdSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
-
+        
         // Проверяем, существует ли диспут
         const [dispute] = await db.query('SELECT * FROM Disputes WHERE status="pending" AND id = ?', [disputeId]);
         if (dispute.length === 0) {

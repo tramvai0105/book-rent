@@ -149,24 +149,10 @@ businessRouter.put('/editBook', upload.array('photos'), async (req, res) => {
     }
 });
 
-// Схема для аренды книги
-const rentalSchema = {
-    type: 'object',
-    properties: {
-        listingId: { type: 'number' },
-    },
-    required: ['listingId'],
-};
-
 // Роут для запроса аренды книги
 businessRouter.post('/rentBook', async (req, res) => {
     try {
         const { listingId } = req.body;
-
-        const validationResult = schemaInspector.validate(rentalSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         const [listing] = await db.query('SELECT * FROM listings WHERE status="approved" AND id = ?', [listingId]);
         if (listing.length === 0) {
@@ -213,24 +199,10 @@ businessRouter.post('/rentBook', async (req, res) => {
     }
 });
 
-// Схема для подтверждения аренды
-const confirmRentalSchema = {
-    type: 'object',
-    properties: {
-        rentalId: { type: 'number' },
-    },
-    required: ['rentalId'],
-};
-
 // Роут для подтверждения аренды
 businessRouter.post('/confirmRental', async (req, res) => {
     try {
         const { rentalId } = req.body;
-
-        const validationResult = schemaInspector.validate(confirmRentalSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         const [rental] = await db.query('SELECT * FROM rentals WHERE id = ? AND status = "pending"', [rentalId]);
         if (rental.length === 0) {
@@ -309,24 +281,10 @@ businessRouter.post('/confirmRental', async (req, res) => {
     }
 });
 
-// Схема для покупки книги
-const purchaseSchema = {
-    type: 'object',
-    properties: {
-        listingId: { type: 'number' },
-    },
-    required: ['listingId'],
-};
-
 // Роут для запроса покупки книги
 businessRouter.post('/purchaseBook', async (req, res) => {
     try {
         const { listingId } = req.body;
-
-        const validationResult = schemaInspector.validate(purchaseSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         const [listing] = await db.query('SELECT * FROM listings WHERE status="approved" AND id = ?', [listingId]);
         if (listing.length === 0) {
@@ -370,24 +328,10 @@ businessRouter.post('/purchaseBook', async (req, res) => {
     }
 });
 
-// Схема для подтверждения покупки
-const confirmPurchaseSchema = {
-    type: 'object',
-    properties: {
-        purchaseId: { type: 'number' },
-    },
-    required: ['purchaseId'],
-};
-
 // Роут для подтверждения покупки
 businessRouter.post('/confirmPurchase', async (req, res) => {
     try {
         const { purchaseId } = req.body;
-
-        const validationResult = schemaInspector.validate(confirmPurchaseSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         const [purchase] = await db.query('SELECT * FROM purchases WHERE id = ? AND status = "pending"', [purchaseId]);
         if (purchase.length === 0) {
@@ -633,23 +577,10 @@ businessRouter.post('/requestReturn', async (req, res) => {
     }
 });
 
-const confirmReturnSchema = {
-    type: 'object',
-    properties: {
-        rentalId: { type: 'number' },
-    },
-    required: ['rentalId'],
-};
-
 // Роут для подтверждения возврата арендованной книги
 businessRouter.post('/confirmReturn', async (req, res) => {
     try {
         const { rentalId } = req.body;
-
-        const validationResult = schemaInspector.validate(confirmReturnSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         const [rental] = await db.query('SELECT * FROM rentals WHERE id = ?', [rentalId]);
         if (rental.length === 0) {
@@ -734,25 +665,10 @@ businessRouter.post('/confirmReturn', async (req, res) => {
     }
 });
 
-const createDisputeSchema = {
-    type: 'object',
-    properties: {
-        rentalId: { type: 'integer', minLength: 1, required: true },
-        description: { type: 'string', minLength: 10, maxLength: 500, required: true },
-    },
-    required: ['rentalId', 'description'],
-};
-
 businessRouter.post('/createDispute', upload.array('photos'), async (req, res) => {
     try {
         const { rentalId, description, images } = req.body;
         const userId = req.user.id;
-
-        const validationResult = schemaInspector.validate(createDisputeSchema, req.body);
-        console.log(validationResult)
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
-        }
 
         if (description.length < 10) {
             return res.status(400).json({ message: 'Необходимая длина описания от 10 символов' });

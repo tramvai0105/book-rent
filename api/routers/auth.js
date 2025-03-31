@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs"
 import { config } from 'dotenv';
 import db from '../db.js';
 import transporter from '../mail.js';
-import schemaInspector from 'schema-inspector';
+import { registrationSchema } from '../schemas.js';
 config();
 
 /// ДЛЯ OAuTH Google
@@ -29,25 +29,14 @@ authRouter.post("/logout", (req, res, next) => {
     });
 });
 
-const registrationSchema = {
-    type: 'object',
-    properties: {
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string', minLength: 6 }, // Минимальная длина пароля
-        contactInfo: { type: 'string', minLength: 1 }, // Обязательно
-        city: { type: 'string', minLength: 1 }, // Обязательно
-    },
-    required: ['email', 'password', 'contactInfo', 'city'], // Все поля обязательны
-};
-
 // Регистрация
 authRouter.post('/register', async (req, res) => {
     const { email, password, contactInfo, city } = req.body;
 
     // Валидация данных
-    const validationResult = schemaInspector.validate(registrationSchema, req.body);
-    if (!validationResult.valid) {
-        return res.status(400).json({ message: validationResult.format() });
+    const { error } = registrationSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

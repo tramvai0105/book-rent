@@ -109,3 +109,39 @@ export function isValidPhoneNumber(phoneNumber) {
 
     return phoneRegex.test(phoneNumber);
 }
+
+// Схема валидации с использованием Joi
+export const registrationSchema = Joi.object({
+    email: Joi.string()
+        .email()
+        .required()
+        .messages({
+            'string.base': 'Email должен быть строкой',
+            'string.email': 'Некорректный адрес электронной почты',
+            'any.required': 'Email обязателен'
+        }),
+    password: Joi.string()
+        .min(6)
+        .required()
+        .messages({
+            'string.base': 'Пароль должен быть строкой',
+            'string.min': 'Пароль должен содержать не менее 6 символов',
+            'any.required': 'Пароль обязателен'
+        }),
+    contactInfo: Joi.string()
+        .min(1)
+        .required()
+        .messages({
+            'string.base': 'Контактная информация должна быть строкой',
+            'string.min': 'Контактная информация обязательна',
+            'any.required': 'Контактная информация обязательна'
+        }),
+    city: Joi.string()
+        .min(1)
+        .required()
+        .messages({
+            'string.base': 'Город должен быть строкой',
+            'string.min': 'Город обязателен',
+            'any.required': 'Город обязателен'
+        }),
+});

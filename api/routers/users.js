@@ -12,29 +12,6 @@ let usersRouter = express.Router();
 import db from '../db.js';
 import { isModerator } from '../middleware.js';
 
-const userSchema = {
-    type: 'object',
-    properties: {
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string', minLength: 6 },
-        balance: { type: 'number' },
-        name: { type: 'string', minLength: 1 },
-        city: { type: 'string', minLength: 1 },
-        avatarUrl: { type: 'string', optional: true },
-        contactInfo: { type: 'string', minLength: 1 },
-        description: { type: 'string', optional: true },
-        role: { type: 'string', enum: ['user', 'moderator'] },
-    },
-};
-
-const validateUser  = (data) => {
-    const result = Schema.validate(data, userSchema);
-    if (result.valid) {
-        return null;
-    }
-    return result;
-};
-
 usersRouter(isModerator);
 
 // GET: Получить всех пользователей
@@ -63,7 +40,6 @@ usersRouter.get('/:id', async (req, res) => {
 
 // POST: Создать нового пользователя
 usersRouter.post('/', upload, async (req, res) => {
-    const validationError = validateUser (req.body);
     if (validationError) {
         return res.status(400).json({ message: 'Ошибка валидации данных.', errors: validationError });
     }
@@ -93,7 +69,6 @@ usersRouter.post('/', upload, async (req, res) => {
 // PUT: Обновить пользователя по ID
 usersRouter.put('/:id', upload, async (req, res) => {
     const userId = req.params.id;
-    const validationError = validateUser (req.body);
     if (validationError) {
         return res.status(400).json({ message: 'Ошибка валидации данных.', errors: validationError });
     }

@@ -4,7 +4,6 @@ import express from 'express'
 const booksRouter = express.Router()
 import { config } from 'dotenv';
 import db from '../db.js';
-import Schema from 'schema-inspector';
 import { checkPermissions, isAuthenticatedAndVerified } from '../middleware.js';
 config();
 import storage, {fileFilter} from '../multerConfig.js';
@@ -28,15 +27,6 @@ const bookSchema = {
         description: { type: 'string', optional: true },
         userId: { type: 'number' },
     },
-};
-
-// Функция для валидации данных
-const validateBook = (data) => {
-    const result = Schema.validate(data, bookSchema);
-    if (result.valid) {
-        return null; // Валидация прошла успешно
-    }
-    return result; // Возвращаем ошибки валидации
 };
 
 // GET: Получить все книги
@@ -65,11 +55,6 @@ booksRouter.get('/:id', async (req, res) => {
 
 // POST: Создать новую книгу
 booksRouter.post('/', isAuthenticatedAndVerified, upload, async (req, res) => {
-    const validationError = validateBook(req.body);
-    if (validationError) {
-        return res.status(400).json({ message: 'Ошибка валидации данных.', errors: validationError });
-    }
-
     const newBook = {
         title: req.body.title,
         author: req.body.author,
@@ -94,11 +79,6 @@ booksRouter.post('/', isAuthenticatedAndVerified, upload, async (req, res) => {
 
 // PUT: Обновить книгу по ID
 booksRouter.put('/:id', isAuthenticatedAndVerified, checkPermissions, upload, async (req, res) => {
-    const bookId = req.params.id;
-    const validationError = validateBook(req.body);
-    if (validationError) {
-        return res.status(400).json({ message: 'Ошибка валидации данных.', errors: validationError });
-    }
 
     const updatedBook = {
         title: req.body.title,
