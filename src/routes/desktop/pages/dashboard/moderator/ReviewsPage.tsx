@@ -89,8 +89,12 @@ function Review({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
                             <span>{listing.phoneNumber}</span>
                         </p>
                         <p className="flex gap-3">
-                            <span className="font-semibold">Город:</span>
+                            <span className="font-semibold">Адресс:</span>
                             <span>{listing.address}</span>
+                        </p>
+                        <p className="flex gap-3">
+                            <span className="font-semibold">Город:</span>
+                            <span>{listing.city}</span>
                         </p>
                     </div>
                     <div className="mb-4">

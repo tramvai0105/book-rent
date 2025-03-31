@@ -64,6 +64,7 @@ export default function DisputePage() {
         let body = await res.json();
         alert(body.message);
         store.fetchUser()
+        navigate("/dashboard/mod")
     }
 
     async function returnDepositToRenter(){

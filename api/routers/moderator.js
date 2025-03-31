@@ -69,6 +69,7 @@ moderatorRouter.get("/listings", async (req, res) => {
             deposit: row.deposit,
             phoneNumber: row.phoneNumber,
             address: row.address,
+            city: row.city,
             deliveryMethod: row.deliveryMethod,
             status: row.status,
             createdAt: row.createdAt,

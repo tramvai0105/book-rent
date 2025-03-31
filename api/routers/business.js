@@ -791,7 +791,7 @@ businessRouter.post('/createDispute', upload.array('photos'), async (req, res) =
 
         const sellerId = listing[0].userId;
         if (userId !== sellerId) {
-            return res.status(403).json({ message: 'Доступ запрещен: вы не являетесь арендодателем этого объявления' });
+            return res.status(403).json({ message: 'Доступ запрещен: вы не являетесь арендатором этого объявления' });
         }
 
         let [chatId] = await db.query(`SELECT id FROM Chats WHERE (sellerId = ? AND buyerId = ?) AND listingId = ?`, [sellerId, renterId, listingId]);

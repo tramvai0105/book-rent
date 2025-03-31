@@ -36,6 +36,7 @@ privateRouter.get("/listings", async (req, res) => {
                 l.deposit,
                 l.phoneNumber,
                 l.address,
+                l.city,
                 l.deliveryMethod,
                 l.status,
                 l.createdAt,
@@ -46,11 +47,9 @@ privateRouter.get("/listings", async (req, res) => {
             LEFT JOIN Moderations m ON l.id = m.listingId
             WHERE l.userId = ?
         `, [userId]);
-
         if (rows.length === 0) {
             return res.status(200).json([]);
         }
-
         const listingsData = rows.map(row => ({
             id: row.id,
             title: row.title,
@@ -66,13 +65,13 @@ privateRouter.get("/listings", async (req, res) => {
             deposit: row.deposit,
             phoneNumber: row.phoneNumber,
             address: row.address,
+            city: row.city,
             deliveryMethod: row.deliveryMethod,
             status: row.status,
             createdAt: row.createdAt,
             updatedAt: row.updatedAt,
             rejectionReason: row.rejectionReason || ""
         }));
-
         res.json(listingsData);
     } catch (error) {
         console.error("Ошибка при получении объявлений:", error);

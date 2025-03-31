@@ -42,6 +42,7 @@ export interface ListingData {
     deposit: number,
     phoneNumber: string,
     address: string,
+    city: string,
     deliveryMethod: 'meetup' | 'post',
     status: 'pending' | 'approved' | 'process' | 'rejected' | 'closed',
     rejectionReason: string,

@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom"
-import book from "../../../../../assets/book.jpg"
 import React, { useEffect, useState } from "react"
 import { ListingData } from "../../../../../utils/dataModels"
 import BookImages from "../../../ui/BookImages"
+import refresh from "../../../../../assets/refresh.svg"
 
 export default function Listings() {
     const navigate = useNavigate()
@@ -15,14 +15,16 @@ export default function Listings() {
     const fetchListings = async () => {
         let res = await fetch("/api/private/listings");
         let body = await res.json();
+        console.log(body);
         setListings(body);
     }
 
     return (
         <>
-            <div className="flex flex-row mt-6 justify-between items-center px-6">
+            <div className="flex flex-row mt-6 gap-6 items-center px-6">
                 <h1 className="text-2xl font-bold">Мои объявления</h1>
-                <button onClick={()=>navigate("./new")} className="cursor-pointer px-8 py-2 rounded-xl bg-lbrown text-xl 
+                <img onClick={fetchListings} className="h-[25px] w-[25px] cursor-pointer hover:rotate-180 transition-transform duration-300 mr-12" src={refresh}/>
+                <button onClick={()=>navigate("./new")} className="cursor-pointer ml-auto px-8 py-2 rounded-xl bg-lbrown text-xl 
                 border-[1px] border-lbrown hover:text-white">Новое объявление</button>
             </div>
             <div className="w-full h-[1px] my-2 bg-dark"></div>
@@ -80,8 +82,12 @@ function Listing({listing, refetch}:{listing: ListingData, refetch: ()=>void}) {
                             <span>{listing.phoneNumber}</span>
                         </p>
                         <p className="flex gap-3">
-                            <span className="font-semibold">Город:</span>
+                            <span className="font-semibold">Адресс встречи:</span>
                             <span>{listing.address}</span>
+                        </p>
+                        <p className="flex gap-3">
+                            <span className="font-semibold">Город:</span>
+                            <span>{listing.city}</span>
                         </p>
                     </div>
                     {listing.rejectionReason ?<div className="mb-4">
