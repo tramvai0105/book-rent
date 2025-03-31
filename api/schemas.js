@@ -44,12 +44,7 @@ export const bookSchema = Joi.object({
             'any.required': 'Адрес обязателен для заполнения.'
         }),
     photos: Joi.string().optional(),
-    listingId: Joi.string().min(1).required()
-    .messages({
-        'string.base': 'Номер объявления не предоставлен.',
-        'string.empty': 'Номер объявления не предоставлен.',
-        'string.min': 'Номер объявления не предоставлен.',
-    }),
+    listingId: Joi.string().optional(),
     phoneNumber: Joi.string()
         .optional()
         .messages({
