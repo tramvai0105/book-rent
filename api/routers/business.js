@@ -2,7 +2,6 @@ import express from 'express'
 const businessRouter = express.Router()
 import { config } from 'dotenv';
 import db from '../db.js';
-import schemaInspector from 'schema-inspector';
 import { isAuthenticatedAndVerified } from '../middleware.js';
 import multer from "multer";
 // Складываем всё в папку files. Имя генерируем от даты
@@ -19,33 +18,18 @@ config();
 businessRouter.use(isAuthenticatedAndVerified);
 
 // Схема для добавления книги
-const bookSchema = {
-    type: 'object',
-    properties: {
-        title: { type: 'string', minLength: 4 },
-        author: { type: 'string', minLength: 4 },
-        publicationYear: { type: 'number', optional: true },
-        genre: { type: 'string', minLength: 4 },
-        address: { type: 'string', minLength: 4 },
-        photoUrls: { type: 'array', items: { type: 'string' }, optional: true },
-        phoneNumber: { type: 'string', optional: true },
-        description: { type: 'string', maxLength: 500, optional: true },
-        wealth: { type: 'string', maxLength: 500, optional: true },
-        interactionType: { type: 'string', enum: ['rent', 'sale', 'both'] },
-        rentPricePerMonth: { type: 'number', optional: true },
-        deposit: { type: 'number', optional: true },
-        salePrice: { type: 'number', optional: true },
-    },
-    required: ['title', 'author', 'publicationYear', 'genre', 'city', 'interactionType'],
-};
+import { bookSchema, isValidPhoneNumber } from '../schemas.js';
 
 businessRouter.post('/addBook', upload.array('photos'), async (req, res) => {
     try {
         const { title, author, publicationYear, genre, wealth, city, address, phoneNumber, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
 
-        const validationResult = schemaInspector.validate(bookSchema, req.body);
-        if (!validationResult.valid) {
-            return res.status(400).json({ message: validationResult.format() });
+        const { error } = bookSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        }
+        if(!isValidPhoneNumber(phoneNumber)){
+            return res.status(400).json({ message: "Недействительный номер телефона" });
         }
 
         // Проверка на наличие загруженных файлов
@@ -97,6 +81,14 @@ businessRouter.post('/addBook', upload.array('photos'), async (req, res) => {
 businessRouter.put('/editBook', upload.array('photos'), async (req, res) => {
     try {
         const { listingId, title, author, publicationYear, genre, wealth, address, phoneNumber, description, interactionType, rentPricePerMonth, deposit, salePrice } = req.body;
+
+        const { error } = bookSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        }
+        if(!isValidPhoneNumber(phoneNumber)){
+            return res.status(400).json({ message: "Недействительный номер телефона" });
+        }
 
         const [listingRows] = await db.query('SELECT l.userId, b.id AS bookId, l.status, b.photoUrls FROM listings l JOIN books b ON l.bookId = b.id WHERE l.id = ?', [listingId]);
 

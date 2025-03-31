@@ -30,6 +30,10 @@ function _Options() {
 
     async function handleChangeName(){
         try {
+            if(newName.length < 4){
+                alert("Имя должно содержать минимум 4 символа.")
+                return;
+            }
             const response = await fetch('/api/private/changeName', {
                 method: 'POST',
                 headers: {
@@ -55,6 +59,7 @@ function _Options() {
     return (
         <div className='flex flex-col text-xl w-full rounded-2xl gap-6 px-6 py-12 border-dark border-[1px]'>
             <h1 className='text-2xl font-bold'>Настройки</h1>
+            <span>Ваш адрес почты: <span>{store.getUserData()?.email}</span></span>
             <div className="w-full flex flex-row">
                 <div className='w-1/2'>
                     <div className='flex flex-col gap-4 w-fit'>

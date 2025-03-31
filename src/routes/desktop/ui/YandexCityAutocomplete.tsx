@@ -15,6 +15,7 @@ function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true
         return {
             clear(){
                 setInputValue("")
+                setSuggestions([])
             }
         };
       }, []);
@@ -56,7 +57,7 @@ function YandexCityAutocomplete({setter, className, placeholder, cityOnly = true
         <div>
             <input
                 ref={ref}
-                type="text"
+                type="search"
                 value={inputValue}
                 onChange={handleChange}
                 className={className}

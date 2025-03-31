@@ -19,6 +19,19 @@ export default function BookImages({ images, style }: { images: string[], style:
         }
     }
 
+    if(images.length == 1){
+        return(
+            <>
+                {modal?<div onClick={()=>setModal(false)} className='absolute cursor-pointer z-10 left-0 flex justify-center items-center bg-dark/55 top-0 bottom-0 right-0'>
+                     <img onClick={(e)=>e.stopPropagation()} className='h-[85%] cursor-default w-auto max-w-[85%]' src={`/${images[ind]}`} />
+                </div>:<></>}
+                <div onClick={()=>setModal(true)} className='relative cursor-pointer mx-auto select-none w-fit h-fit rounded-lg'>
+                    <img alt="Фотография" className={style} src={`/${images[ind]}`} />
+                </div>
+            </>
+        )
+    }
+
     return (
         <>
             {modal?<div onClick={()=>setModal(false)} className='absolute cursor-pointer z-10 left-0 flex justify-center items-center bg-dark/55 top-0 bottom-0 right-0'>

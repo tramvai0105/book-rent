@@ -70,8 +70,12 @@ export default function NewListing() {
                 body: data,
             });
             const result = await response.json();
-            navigate("/dashboard")
+            if(!response.ok){
+                alert(result.message);
+                return;
+            }
             alert(result.message);
+            navigate("/dashboard")
         } catch (error) {
             console.error(error);
             alert('Произошла ошибка при добавлении книги');

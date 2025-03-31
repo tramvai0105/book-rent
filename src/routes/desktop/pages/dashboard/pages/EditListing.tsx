@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditListing() {
     const { id } = useParams(); // Получаем ID из URL
@@ -21,6 +21,7 @@ export default function EditListing() {
     });
 
     const [previewImages, setPreviewImages] = useState([]);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchListingData = async () => {
@@ -102,7 +103,12 @@ export default function EditListing() {
                 body: data,
             });
             const result = await response.json();
+            if(!response.ok){
+                alert(result.message);
+                return;
+            }
             alert(result.message);
+            navigate("/dashboard")
         } catch (error) {
             console.error(error);
             alert('Произошла ошибка при добавлении книги');
