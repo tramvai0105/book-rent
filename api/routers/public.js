@@ -2,8 +2,6 @@ import express from 'express'
 const publicRouter = express.Router()
 import { config } from 'dotenv';
 import db from '../db.js';
-import schemaInspector from 'schema-inspector';
-import { isAuthenticatedAndVerified, isModerator } from '../middleware.js';
 import multer from "multer";
 const storage = multer.diskStorage({
     destination: "files/",
