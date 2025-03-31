@@ -99,7 +99,12 @@ app.use('*all', async (req, res) => {
     // Получаем информацию о пользователе
     const url = req.originalUrl.replace(base, '')
     const userAgent = req.headers['user-agent'];
-    const deviceType = userAgent.isMobile ? 'Mobile' : userAgent.isTablet ? 'Mobile' : 'Desktop';
+    let deviceType = 'Desktop';
+    if (userAgent && /mobile/i.test(userAgent)) {
+      deviceType = 'Mobile';
+    } else if (userAgent && /tablet/i.test(userAgent)) {
+      deviceType = 'Tablet';
+    }
     /** @type {string} */
     let template
     /** @type {import('./src/entry-server.ts').render} */
