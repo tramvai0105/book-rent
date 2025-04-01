@@ -15,6 +15,7 @@ export default function Orders() {
 
     const [page, setPage] = useState<OrdersEnum>(OrdersEnum.Sell);
     const [data, setData] = useState<OrdersData | null>(null)
+    const [fOptionType, setFOptionType] = useState<"" | "rent" | "sale">("")
 
     useEffect(() => {
         fetchOrders();
@@ -30,21 +31,26 @@ export default function Orders() {
         <div className="flex flex-col mb-4 gap-4">
             <div className="flex flex-row gap-6 items-center">
                 <h1 className="text-2xl font-bold">Заказы</h1>
+                <select onChange={e=>{setFOptionType(e.target.value)}}>
+                    <option value={""}>Оба способа</option>
+                    <option value={"rent"}>Аренда</option>
+                    <option value={"sale"}>Продажа</option>
+                </select>
                 <img onClick={fetchOrders} className="h-[25px] w-[25px] cursor-pointer hover:rotate-180 transition-transform duration-300 mr-12" src={refresh}/>
                 <button onClick={() => setPage(OrdersEnum.Sell)} className={clsx({ "underline": page == OrdersEnum.Sell }, "cursor-pointer text-xl rounded-md hover:bg-dark hover:text-white px-6 py-1")}>Продажа</button>
                 <button onClick={() => setPage(OrdersEnum.Buy)} className={clsx({ "underline": page == OrdersEnum.Buy }, "cursor-pointer text-xl rounded-md hover:bg-dark hover:text-white px-6 py-1")}>Покупка</button>
             </div>
-            {page == OrdersEnum.Buy && data ? <OrdersBuy rf={fetchOrders} sales={data?.purchases} rentals={data?.rentalsAsRenter} /> : <></>}
-            {page == OrdersEnum.Sell && data ? <OrdersSell rf={fetchOrders} sales={data?.sales} rentals={data?.rentalsAsLessor} /> : <></>}
+            {page == OrdersEnum.Buy && data ? <OrdersBuy type={fOptionType} rf={fetchOrders} sales={data?.purchases} rentals={data?.rentalsAsRenter} /> : <></>}
+            {page == OrdersEnum.Sell && data ? <OrdersSell type={fOptionType} rf={fetchOrders} sales={data?.sales} rentals={data?.rentalsAsLessor} /> : <></>}
         </div>
     )
 }
 
-function OrdersBuy({ sales, rentals, rf }: { sales: Purchase[], rentals: RentalAsRenter[], rf: () => Promise<void> }) {
+function OrdersBuy({ sales, rentals, rf, type }: { sales: Purchase[], rentals: RentalAsRenter[], rf: () => Promise<void>, type: "rent" | "sale" | "" }) {
     return (
         <div className="flex flex-col gap-4">
-            {sales.map((s, i) => <OrderBuySale data={s} key={i} />)}
-            {rentals.map((s, i) => <OrderBuyRent rf={rf} data={s} key={i} />)}
+            {type == "rent" ? <></> : sales.map((s, i) => <OrderBuySale data={s} key={i} />)}
+            {type == "sale" ? <></> : rentals.map((s, i) => <OrderBuyRent rf={rf} data={s} key={i} />)}
         </div>
     )
 }
@@ -139,11 +145,11 @@ function OrderBuySale({ data }: { data: Purchase }) {
     )
 }
 
-function OrdersSell({ sales, rentals, rf }: { sales: Sale[], rentals: RentalAsLessor[], rf: () => Promise<void> }) {
+function OrdersSell({ sales, rentals, rf, type }: { sales: Sale[], rentals: RentalAsLessor[], rf: () => Promise<void>, type: "rent" | "sale" | "" }) {
     return (
         <div className="flex flex-col gap-4">
-            {sales.map((s, i) => <OrderSellSale rf={rf} data={s} key={i} />)}
-            {rentals.map((s, i) => <OrderSellRent rf={rf} data={s} key={i} />)}
+            {type == "rent" ? <></> : sales.map((s, i) => <OrderSellSale rf={rf} data={s} key={i} />)}
+            {type == "sale" ? <></> : rentals.map((s, i) => <OrderSellRent rf={rf} data={s} key={i} />)}
         </div>
     )
 }
