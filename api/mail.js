@@ -13,6 +13,7 @@ config();
 //           pass: process.env.VITE_MAIL_PASSWORD
 //         }
 //       });
+//       transporter.options.sender = String(process.env.VITE_MAIL)
 //       return transporter;
 //     }catch(err){
 //         console.log(err)

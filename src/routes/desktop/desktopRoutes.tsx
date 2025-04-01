@@ -23,6 +23,7 @@ import DisputePage from "./pages/dashboard/moderator/DisputePage"
 import EditListing from "./pages/dashboard/pages/EditListing"
 import About from "./pages/about/About"
 
+// Роуты
 const desktopRoutes = [
     {
       path: "/",

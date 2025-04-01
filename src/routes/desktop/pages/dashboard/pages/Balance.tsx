@@ -45,6 +45,7 @@ function _Balance() {
         alert(body.message);
     }
 
+    // Смена роли для тестов. Можно убрать
     async function changeRole() {
         let res = await fetch("/api/private/changeRole", {
             method: "POST"

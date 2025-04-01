@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { User } from "./models";
 
+// Наше хранилище состояний(используем для работы с авторизацией на клиенте)
 class Store {
   userData: User | undefined;
   authorized: boolean = false;
@@ -9,6 +10,7 @@ class Store {
     makeAutoObservable(this);
   }
 
+  // Получаем пользователя
   async fetchUser(){
     let res = await fetch("/auth/me")
     let body = await res.json();
